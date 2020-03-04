@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.centrale.pgrou.items.Contenuquiz;
 import org.centrale.pgrou.items.Groupe;
 import org.centrale.pgrou.items.Notation;
-import org.centrale.pgrou.items.Personne;
 import org.centrale.pgrou.items.Question;
 import org.centrale.pgrou.items.Quiz;
 import org.centrale.pgrou.items.Test;
@@ -77,7 +76,7 @@ public class SessionController {
             returned.addObject("listQuizs",listQuiz);
             returned.addObject("listTests",listTest);
         }else if ((anUser.getUser().equals("Judith")) && (anUser.getPasswd().equals("admin"))){
-            List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),2);
+            List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
             List<TestAff> listTestAff = new ArrayList();
             String format = "HH:mm";
             java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
@@ -92,8 +91,12 @@ public class SessionController {
             returned.addObject("listTests",listTestAff);
         } else if ((anUser.getUser().equals("Alban")) && (anUser.getPasswd().equals("admin"))){
             List<Question> listQuestion = questionRepository.findAll();
-            returned = new ModelAndView("questRep");
+            returned = new ModelAndView("question");
             returned.addObject("listQuestion",listQuestion);
+        } else if ((anUser.getUser().equals("Pierre")) && (anUser.getPasswd().equals("admin"))){
+//            List<Question> listQuestion = questionRepository.findAll();
+            returned = new ModelAndView("quiz");
+//            returned.addObject("listQuestion",listQuestion);
         }else{
             returned = new ModelAndView("index");
         }

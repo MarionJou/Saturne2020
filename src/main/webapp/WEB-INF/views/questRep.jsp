@@ -37,6 +37,10 @@
                                 <input type ="hidden" name="id" value="${question.questionid}" />
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
+                            <form action="modifQuestion.do" method="POST">
+                                <input type ="hidden" name="id" value="${question.questionid}" />
+                                <button><img src="img/edit.png" alt="delete" height="20" /></button>
+                            </form>
                         </th>
                     </tr>                    
                 </c:forEach>

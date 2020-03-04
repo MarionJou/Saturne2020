@@ -114,12 +114,11 @@ create new input element and append it to an element
 @param size: the input size
 @return inputElement
 ------------------------------------------------------------------ */
-function addInput(currentElement, name, value, size) {
+function addInput(currentElement, name, value, type) {
 	var inputElement = document.createElement("INPUT");
-	inputElement.setAttribute("type", "text");
+	inputElement.setAttribute("type", type);
 	inputElement.setAttribute("name", name);
 	inputElement.setAttribute("value", value);
-	inputElement.setAttribute("size", size);
 	
 	currentElement.appendChild(inputElement);
 	

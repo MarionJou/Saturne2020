@@ -32,6 +32,7 @@ import org.centrale.pgrou.repositories.ContenuquizRepository;
 import org.centrale.pgrou.repositories.EvaluationRepository;
 import org.centrale.pgrou.repositories.EvaluationquestionRepository;
 import org.centrale.pgrou.repositories.EvaluationreponseRepository;
+import org.centrale.pgrou.repositories.NotationRepository;
 import org.centrale.pgrou.repositories.PersonneRepository;
 import org.centrale.pgrou.repositories.QcmrepRepository;
 import org.centrale.pgrou.repositories.QcmrepevalRepository;
@@ -69,6 +70,8 @@ public class RpseTestController {
     private EvaluationreponseRepository evaluationreponseRepository;
     @Autowired
     private QcmrepevalRepository qcmrepevalRepository;
+    @Autowired
+    private NotationRepository notationRepository;
     
     @RequestMapping(value="repondre.do",method=RequestMethod.POST)
     public ModelAndView handlePost(HttpServletRequest request) {
@@ -127,7 +130,7 @@ public class RpseTestController {
     @RequestMapping(value="envRep.do",method=RequestMethod.POST)
     public ModelAndView envRep(HttpServletRequest request) throws ParseException {
         ModelAndView returned;
-        List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),2);
+        List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
         List<TestAff> listTestAff = new ArrayList();
         String format = "HH:mm";
         java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
@@ -148,7 +151,7 @@ public class RpseTestController {
         if (unTest.isPresent()){
             Test leTest = unTest.get();
             eval.setTestid(leTest);
-            Optional<Personne> unePers = personneRepository.findById(1); //Tant que y a pas de co je mets une personne de façon arbitraire
+            Optional<Personne> unePers = personneRepository.findById(2); //Tant que y a pas de co je mets une personne de façon arbitraire
             if (unePers.isPresent()){
                 Personne laPers = unePers.get();
                 eval.setPersonneid(laPers); //////////////////
@@ -160,6 +163,7 @@ public class RpseTestController {
                 Date timeDuree = dfb.parse("03:00");//Je mets 3 heures de manière arbitraire
                 eval.setDureeevaluation(timeDuree);
                 Evaluation evalId = evaluationRepository.save(eval);////////////
+                
                 
                 //Crééons maintenant evaluationQuestion et evaluationReponse
                 String strNombre = request.getParameter("nombre");
@@ -202,9 +206,11 @@ public class RpseTestController {
                     }
                     
                 }
-                
+                float note = corriger(evalId.getEvaluationid());
+                System.out.println("Vous avez obtenu la note de: "+note); 
             }
         }
+        
         returned = new ModelAndView("affTest");
         returned.addObject("listTests",listTestAff);
         return returned;
@@ -298,5 +304,53 @@ public class RpseTestController {
         ModelAndView returned = new ModelAndView("affTest");
         returned.addObject("listTests",listTestAff);
         return returned;
+    }
+
+    public float corriger (int idEval){
+        float note = 0;
+        int notationId = notationRepository.findNotationid(idEval);
+        List<Contenuquiz> listQuestion = contenuquizRepository.findWithIdEval(idEval);
+        for (Contenuquiz question: listQuestion){
+            List<Boolean> listCorrecte = reponseRepository.findCorrectes(question.getQuestionid().getQuestionid());
+            List<Boolean> listCochee =qcmrepevalRepository.findCochees(question.getQuestionid().getQuestionid(),idEval);
+            switch(notationId){
+                case 1: //Tout ou rien
+                    Boolean questionJuste = true; 
+                    for (int i=0;i<listCorrecte.size();i++){
+                        if (listCorrecte.get(i)!=listCochee.get(i)){
+                            questionJuste = false;
+                        }
+                    }
+                    if (questionJuste){
+                        note=note+question.getNombrepoints();
+                    }
+                    break;
+                case 2: //Pourcentage
+                    int noteQuestion = 0;
+                    for (int i=0;i<listCorrecte.size();i++){
+                        if (listCorrecte.get(i)==listCochee.get(i)){
+                            noteQuestion=noteQuestion+1;
+                        }
+                    }
+                    note= note + ( (float) noteQuestion/listCorrecte.size())*question.getNombrepoints();
+                    break;
+                case 3: //Points négatifs: on retire 0.5 à chaque mauvaise réponse
+                    int nbrBonneRep = 0;
+                    int nbrMauvaiseRep = 0;
+                    float ptsNeg = (float) 0.5;
+                    
+                    for (int i=0;i<listCorrecte.size();i++){
+                        if (listCochee.get(i) && listCorrecte.get(i)){
+                            nbrBonneRep=nbrBonneRep+1;
+                        }else if (!listCorrecte.get(i) && listCochee.get(i)){
+                            nbrMauvaiseRep=nbrMauvaiseRep+1;
+                        }
+                    }
+                    note= note + ((float)nbrBonneRep/listCorrecte.size())*question.getNombrepoints() + (float)nbrMauvaiseRep*ptsNeg;
+                    break;
+                    
+            }
+        }
+        return note;
     }
 }
