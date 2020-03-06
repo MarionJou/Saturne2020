@@ -7,11 +7,10 @@ package org.centrale.pgrou.repositories;
 
 import java.util.Date;
 import java.util.List;
-import org.centrale.pgrou.items.Personne;
+import org.centrale.pgrou.items.Qcm;
 import org.centrale.pgrou.items.Test;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,13 +18,9 @@ import org.springframework.stereotype.Repository;
  * @author Mario
  */
 @Repository
-public interface TestRepository extends JpaRepository<Test,Integer>{
-    @Query(value="SELECT * FROM public.test \n" +
-            "INNER JOIN contenugroupe\n" +
-            "USING (groupeid)\n" +
-            "WHERE personneid=?2 AND datedebuttest<=?1 AND datefintest>=?1;",nativeQuery=true)
+public interface QcmRepository extends JpaRepository<Qcm,Integer>{
+    @Query(value="SELECT * FROM public.qcm \n" +
+            "WHERE questionid=?1",nativeQuery=true)
     //List<Test> findWithParameters(@Param("date")Date date,@Param("personne")Personne personne);
-    public List<Test> findWithParameters(Date date,int personne);
-//Rajouter le groupe: donc le récupérer -> voir comment faire puisqu'une personne a plusieurs groupe mais 1 test en a 1 
-    
+    public  Qcm findWithParameters(int id);
 }

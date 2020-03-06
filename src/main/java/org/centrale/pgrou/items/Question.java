@@ -67,6 +67,9 @@ public class Question implements Serializable {
     @JoinColumn(name = "imageid", referencedColumnName = "imageid")
     @ManyToOne
     private Image imageid;
+    @JoinColumn(name = "personneid", referencedColumnName = "personneid")
+    @ManyToOne(optional = false)
+    private Personne personneid;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionid")
     private Collection<Contenuquiz> contenuquizCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionid")
@@ -136,6 +139,14 @@ public class Question implements Serializable {
 
     public void setImageid(Image imageid) {
         this.imageid = imageid;
+    }
+
+    public Personne getPersonneid() {
+        return personneid;
+    }
+
+    public void setPersonneid(Personne personneid) {
+        this.personneid = personneid;
     }
 
     @XmlTransient

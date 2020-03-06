@@ -76,6 +76,8 @@ public class Personne implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personneid")
     private Collection<Quiz> quizCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personneid")
+    private Collection<Question> questionCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personneid")
     private Collection<Connexion> connexionCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personneid")
     private Collection<Evaluation> evaluationCollection;
@@ -159,6 +161,15 @@ public class Personne implements Serializable {
 
     public void setQuizCollection(Collection<Quiz> quizCollection) {
         this.quizCollection = quizCollection;
+    }
+
+    @XmlTransient
+    public Collection<Question> getQuestionCollection() {
+        return questionCollection;
+    }
+
+    public void setQuestionCollection(Collection<Question> questionCollection) {
+        this.questionCollection = questionCollection;
     }
 
     @XmlTransient

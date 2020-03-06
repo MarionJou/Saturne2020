@@ -8,6 +8,7 @@ package org.centrale.pgrou.controllers;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import org.centrale.pgrou.items.Test;
 import org.centrale.pgrou.repositories.ContenuquizRepository;
 import org.centrale.pgrou.repositories.GroupeRepository;
 import org.centrale.pgrou.repositories.NotationRepository;
+import org.centrale.pgrou.repositories.PersonneRepository;
+import org.centrale.pgrou.repositories.QuestionRepository;
 import org.centrale.pgrou.repositories.QuizRepository;
 import org.centrale.pgrou.repositories.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,10 @@ public class SessionController {
     private TestRepository testRepository;
     @Autowired
     private ContenuquizRepository contenuquizRepository;
+    @Autowired
+    private PersonneRepository personneRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
     
     
     @RequestMapping(value="index.do",method=RequestMethod.GET)
@@ -68,6 +75,28 @@ public class SessionController {
             returned.addObject("listGroupes", listGroupe);
             returned.addObject("listQuizs",listQuiz);
             returned.addObject("listTests",listTest);
+        }else if ((anUser.getUser().equals("Judith")) && (anUser.getPasswd().equals("admin"))){
+            List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
+            List<TestAff> listTestAff = new ArrayList();
+            String format = "HH:mm";
+            java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
+            for (Test aTest: listTest){
+                TestAff aTestAff = new TestAff(aTest.getTestid(),aTest.getQuizid().getNomquiz());
+                aTestAff.setDureeStr(formater.format(aTest.getDureemaxtest()));
+                int duree = aTestAff.stringToInt(formater.format(aTest.getDureemaxtest()));
+                aTestAff.setDureeInt(duree);
+                listTestAff.add(aTestAff);
+            }
+            returned = new ModelAndView("affTest");
+            returned.addObject("listTests",listTestAff);
+        } else if ((anUser.getUser().equals("Alban")) && (anUser.getPasswd().equals("admin"))){
+            List<Question> listQuestion = questionRepository.findAll();
+            returned = new ModelAndView("question");
+            returned.addObject("listQuestion",listQuestion);
+        } else if ((anUser.getUser().equals("Pierre")) && (anUser.getPasswd().equals("admin"))){
+//            List<Question> listQuestion = questionRepository.findAll();
+            returned = new ModelAndView("quiz");
+//            returned.addObject("listQuestion",listQuestion);
         }else{
             returned = new ModelAndView("index");
         }
@@ -196,4 +225,5 @@ public class SessionController {
         return returned;
     }
 
+    
 }

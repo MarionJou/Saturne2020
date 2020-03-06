@@ -5,8 +5,12 @@
  */
 package org.centrale.pgrou.repositories;
 
+import java.util.List;
+import org.centrale.pgrou.items.Question;
 import org.centrale.pgrou.items.Reponse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,5 +19,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReponseRepository extends JpaRepository<Reponse,Integer>{
+    @Query(value="SELECT r FROM Reponse r WHERE r.questionid=:questionid")
+    List<Reponse> findWithParameter(@Param("questionid")Question questionid);
     
+    @Query(value="SELECT correcte FROM reponse WHERE questionid=?1 ORDER BY reponseid;",nativeQuery=true)
+    public List<Boolean> findCorrectes(int idQuestion);
 }
