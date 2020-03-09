@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +36,8 @@ import org.centrale.pgrou.repositories.EvaluationquestionRepository;
 import org.centrale.pgrou.repositories.EvaluationreponseRepository;
 import org.centrale.pgrou.repositories.NotationRepository;
 import org.centrale.pgrou.repositories.PersonneRepository;
+import org.centrale.pgrou.repositories.QcmRepository;
+
 import org.centrale.pgrou.repositories.QcmrepRepository;
 import org.centrale.pgrou.repositories.QcmrepevalRepository;
 import org.centrale.pgrou.repositories.ReponseRepository;
@@ -72,6 +76,11 @@ public class RpseTestController {
     private QcmrepevalRepository qcmrepevalRepository;
     @Autowired
     private NotationRepository notationRepository;
+
+    @Autowired
+    private QcmRepository qcmRepository;
+
+
     
     @RequestMapping(value="repondre.do",method=RequestMethod.POST)
     public ModelAndView handlePost(HttpServletRequest request) {
@@ -90,7 +99,7 @@ public class RpseTestController {
             unTestAff.setDureeStr(dureeStr);
             int dureeInt = unTestAff.stringToInt(dureeStr);
             unTestAff.setDureeInt(dureeInt);
-            ///////////
+
             returned.addObject("test",unTestAff);
             List<Contenuquiz> quizCont = contenuquizRepository.findWithParameter(unTest.getQuizid());
             Integer i = 1;
@@ -105,31 +114,39 @@ public class RpseTestController {
                         listRepQCM.add(repQCM);
                     }                    
                 }
-                Collection<Qcm> colQ = question.getQcmCollection();
-                Boolean repUni = false;
-                if (colQ.size()==1){
-                    System.out.println("coucou");
-                    for (Qcm qcm: colQ){ //Même si une question n'est reliée qu'a un seul QCM on récupère une collection mais qui ne contient qu'un seul élément
-                        repUni= qcm.getRepunique();
-                        System.out.println(repUni);
-                    }
-                }
+
+                Qcm qcm = qcmRepository.findWithParameters(question.getQuestionid());
+                Boolean repUni= qcm.getRepunique();
                 QuesRepQCM ques = new QuesRepQCM(question.getEnonce(),c.getContenuquizid(),listRepQCM, repUni, i);
-                System.out.println("Rang question "+ques.getOrdre());
                 listQuesRep.add(ques);
                 i=i+1;
             }
+            List<QuesRepQCM> listQuesRepRand= new ArrayList();
+            int size = i-1;
+            Random rand = new Random();
+            for(int k=0; k<(i-1);k++){
+                int index =rand.nextInt(size-k);
+                listQuesRepRand.add(listQuesRep.get(index));
+                listQuesRep.remove(index);
+            }
             returned.addObject("nombre",i-1);
-            returned.addObject("quesRep", listQuesRep);
+            returned.addObject("quesRep", listQuesRepRand);
+            String personneId = request.getParameter("personneId");
+            returned.addObject("personneId", personneId);
         }else{
-            returned = new ModelAndView("index");
-        }
-        return returned;
+        returned = new ModelAndView("index");
+    }
+    return returned;
+
     }
     
     @RequestMapping(value="envRep.do",method=RequestMethod.POST)
     public ModelAndView envRep(HttpServletRequest request) throws ParseException {
         ModelAndView returned;
+
+        String personneIdStr = request.getParameter("personneId");
+        int personneId = Integer.parseInt(personneIdStr);
+
         List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
         List<TestAff> listTestAff = new ArrayList();
         String format = "HH:mm";
@@ -151,18 +168,21 @@ public class RpseTestController {
         if (unTest.isPresent()){
             Test leTest = unTest.get();
             eval.setTestid(leTest);
-            Optional<Personne> unePers = personneRepository.findById(2); //Tant que y a pas de co je mets une personne de façon arbitraire
+
+            Optional<Personne> unePers = personneRepository.findById(personneId); 
             if (unePers.isPresent()){
                 Personne laPers = unePers.get();
-                eval.setPersonneid(laPers); //////////////////
-                //String format = "dd/MM/yy HH:mm:ss";
-                //java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat(format); 
+                eval.setPersonneid(laPers); 
+
                 java.util.Date date = new java.util.Date(); //Je mets la date d'aujourd'hui
                 eval.setDatedebutevaluation(date);
                 DateFormat dfb = new SimpleDateFormat("HH:mm");
                 Date timeDuree = dfb.parse("03:00");//Je mets 3 heures de manière arbitraire
                 eval.setDureeevaluation(timeDuree);
-                Evaluation evalId = evaluationRepository.save(eval);////////////
+
+                Evaluation evalId = evaluationRepository.save(eval);
+
+  
                 
                 
                 //Crééons maintenant evaluationQuestion et evaluationReponse
@@ -194,8 +214,11 @@ public class RpseTestController {
                                 qcmRepEval.setCochee(false);/////////////////
                                 String[] strIdRep = request.getParameterValues("r"+idQues);//On récupère les réponses cochées
                                 for (int j =0; j<strIdRep.length; j++){ //Régler le pb si c'est vide?
-                                    Integer IdQCMRep = Integer.parseInt(strIdRep[j]);
-                                    if (IdQCMRep==qcmRep.getQcmrepid()){
+
+                                    int IdQCMRep = Integer.parseInt(strIdRep[j]);
+                                    int azer = qcmRep.getQcmrepid();
+                                    if (IdQCMRep==azer){
+
                                         qcmRepEval.setCochee(true);
                                     }
                                 }
@@ -208,11 +231,18 @@ public class RpseTestController {
                 }
                 float note = corriger(evalId.getEvaluationid());
                 System.out.println("Vous avez obtenu la note de: "+note); 
+
+                evalId.setNote(note);
+                evaluationRepository.save(evalId);
+
             }
         }
         
         returned = new ModelAndView("affTest");
         returned.addObject("listTests",listTestAff);
+
+        returned.addObject("personneId",personneId);
+
         return returned;
     }
 
@@ -220,7 +250,10 @@ public class RpseTestController {
     public ModelAndView tempsEcoulerPOST(HttpServletRequest request) throws ParseException{
         ModelAndView returned = new ModelAndView("ajax");
         JSONObject object = new JSONObject();
-        
+
+        String personneIdStr = request.getParameter("personneId");
+        int personneId = Integer.parseInt(personneIdStr);
+
         List<Test> listTest = testRepository.findAll();
         Evaluation eval = new Evaluation();
         
@@ -230,7 +263,9 @@ public class RpseTestController {
         if (unTest.isPresent()){
             Test leTest = unTest.get();
             eval.setTestid(leTest);
-            Optional<Personne> unePers = personneRepository.findById(2); //Tant que y a pas de co je mets une personne de façon arbitraire
+
+            Optional<Personne> unePers = personneRepository.findById(personneId); //Tant que y a pas de co je mets une personne de façon arbitraire
+
             if (unePers.isPresent()){
                 Personne laPers = unePers.get();
                 eval.setPersonneid(laPers);
@@ -280,6 +315,12 @@ public class RpseTestController {
                         }
                     }
                 }
+  
+                float note = corriger(evalId.getEvaluationid());
+                System.out.println("Vous avez obtenu la note de: "+note); 
+                evalId.setNote(note);
+                evaluationRepository.save(evalId);
+
             }
         }
                     
@@ -311,32 +352,70 @@ public class RpseTestController {
         int notationId = notationRepository.findNotationid(idEval);
         List<Contenuquiz> listQuestion = contenuquizRepository.findWithIdEval(idEval);
         for (Contenuquiz question: listQuestion){
+
+            Qcm aQcm=qcmRepository.findWithParameters(question.getQuestionid().getQuestionid());
+            Evaluationquestion evalQues = evaluationquestionRepository.findWithContenuQuiz(question.getContenuquizid(),idEval);
+            Boolean repUni = aQcm.getRepunique();
             List<Boolean> listCorrecte = reponseRepository.findCorrectes(question.getQuestionid().getQuestionid());
             List<Boolean> listCochee =qcmrepevalRepository.findCochees(question.getQuestionid().getQuestionid(),idEval);
+            List<Evaluationreponse> evalRep = evaluationreponseRepository.findWithParameters(question.getContenuquizid(),idEval);
+
             switch(notationId){
                 case 1: //Tout ou rien
                     Boolean questionJuste = true; 
                     for (int i=0;i<listCorrecte.size();i++){
                         if (listCorrecte.get(i)!=listCochee.get(i)){
                             questionJuste = false;
+
+                            evalRep.get(i).setJuste(false);
+                        }else{
+                            evalRep.get(i).setJuste(true);
                         }
                     }
                     if (questionJuste){
+                        evalQues.setNotequestion((float)question.getNombrepoints());
                         note=note+question.getNombrepoints();
+                    }else{
+                        evalQues.setNotequestion((float)0.0);
+
                     }
                     break;
                 case 2: //Pourcentage
                     int noteQuestion = 0;
-                    for (int i=0;i<listCorrecte.size();i++){
-                        if (listCorrecte.get(i)==listCochee.get(i)){
-                            noteQuestion=noteQuestion+1;
+
+                    if (!repUni){
+                        for (int i=0;i<listCorrecte.size();i++){
+                            if (listCorrecte.get(i)==listCochee.get(i)){
+                                noteQuestion=noteQuestion+1;
+                                evalRep.get(i).setJuste(true);
+                            }else{
+                                evalRep.get(i).setJuste(false);
+                            }
+                        }
+                    }else{ //Si c'est à réponse unique on fait comme pour le TOR
+                        Boolean questionJuste2 = true; 
+                        for (int i=0;i<listCorrecte.size();i++){
+                            if (listCorrecte.get(i)!=listCochee.get(i)){
+                                questionJuste2 = false;
+                                evalRep.get(i).setJuste(false);
+                            }else{
+                                evalRep.get(i).setJuste(true);
+                            }
+                        }
+                        if (questionJuste2){
+                            noteQuestion=listCorrecte.size();
                         }
                     }
+                    evalQues.setNotequestion(((float) noteQuestion/listCorrecte.size())*question.getNombrepoints());
+
                     note= note + ( (float) noteQuestion/listCorrecte.size())*question.getNombrepoints();
                     break;
                 case 3: //Points négatifs: on retire 0.5 à chaque mauvaise réponse
                     int nbrBonneRep = 0;
                     int nbrMauvaiseRep = 0;
+
+                    int nbreTotBonne = 0;
+
                     float ptsNeg = (float) 0.5;
                     
                     for (int i=0;i<listCorrecte.size();i++){
@@ -345,11 +424,26 @@ public class RpseTestController {
                         }else if (!listCorrecte.get(i) && listCochee.get(i)){
                             nbrMauvaiseRep=nbrMauvaiseRep+1;
                         }
+
+                        if (listCorrecte.get(i)){
+                            nbreTotBonne=nbreTotBonne+1;
+                        }
+                        if (listCochee.get(i)==listCorrecte.get(i)){
+                            evalRep.get(i).setJuste(true);
+                        }else{
+                            evalRep.get(i).setJuste(false);
+                            
+                        }
                     }
-                    note= note + ((float)nbrBonneRep/listCorrecte.size())*question.getNombrepoints() + (float)nbrMauvaiseRep*ptsNeg;
+                    evalQues.setNotequestion(((float)nbrBonneRep/nbreTotBonne)*question.getNombrepoints() - (float)nbrMauvaiseRep*ptsNeg);
+                    note= note + ((float)nbrBonneRep/nbreTotBonne)*question.getNombrepoints() - (float)nbrMauvaiseRep*ptsNeg;
                     break;
-                    
             }
+            for (int i=0;i<evalRep.size();i++){
+                evaluationreponseRepository.save(evalRep.get(i));
+            }
+            evaluationquestionRepository.save(evalQues);
+
         }
         return note;
     }

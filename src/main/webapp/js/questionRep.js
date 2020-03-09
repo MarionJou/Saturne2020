@@ -103,7 +103,8 @@ function ajoutterMotCle(ref){
 }
 
 
-function valider(){
+
+function valider(ref){
     var type = document.getElementsByName("type")[0].value; //Type de question
     if (type=="1"){
         var listEnonce = document.getElementsByName("enonceRepUni"); //Liste des énoncés de réponse
@@ -144,13 +145,34 @@ function valider(){
         url:"creerQuesRep.do",
         data: {
             "type": type,
+            "personneId": document.getElementsByName("personneId")[0].value,
+
             "question": JSON.stringify(question),
             "reponses": JSON.stringify(listRep),
             "motsCles": JSON.stringify(listMotsCles)
         },
         method: 'POST',
         success: function(result){
-            document.location.href="ecranCreation.do";
+
+            var divRef = getNextParentTag(ref,"DIV");
+            deleteAll(divRef);
+            var form = document.createElement("FORM");
+            var bouton = document.createElement("BUTTON");
+            bouton.textContent="Revenir au menu";
+            form.setAttribute("action","versCreerQuest.do");
+            form.setAttribute("method","POST");
+            
+            var hidden = document.createElement("INPUT");
+            hidden.setAttribute("name","id");
+            hidden.type="hidden";
+            hidden.value=document.getElementsByName("personneId")[0].value;
+            form.appendChild(hidden);
+            form.appendChild(bouton);
+            var h1 = document.createElement("H1");
+            h1.textContent="Vous avez fini de créer vvos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
+            divRef.appendChild(h1);
+            divRef.appendChild(form);
+
         },
         error: function(res,stat,err){
             console.log(res.responseText);
@@ -173,7 +195,9 @@ function deleteRep(ref){
     ref.parentNode.removeChild(ref);
 }
 
-function validerModif(){
+
+function validerModif(ref){
+
     var type = document.getElementsByName("type")[0].value; //Type de question
     if (type=="1"){
         var listEnonce = document.getElementsByName("enonceRepUni"); //Liste des énoncés de réponse
@@ -221,7 +245,27 @@ function validerModif(){
         },
         method: 'POST',
         success: function(result){
-            document.location.href="ecranCreation.do";
+            var divRef = getNextParentTag(ref,"DIV");
+            var personneId = document.getElementsByName("personneId")[0].value;
+            console.log(personneId);
+            deleteAll(divRef);
+            var form = document.createElement("FORM");
+            var bouton = document.createElement("BUTTON");
+            bouton.textContent="Revenir au menu";
+            form.setAttribute("action","versCreerQuest.do");
+            form.setAttribute("method","POST");
+            
+            var hidden = document.createElement("INPUT");
+            hidden.setAttribute("name","id");
+            hidden.type="hidden";
+            hidden.value=personneId;
+            form.appendChild(hidden);
+            form.appendChild(bouton);
+            var h1 = document.createElement("H1");
+            h1.textContent="Vous avez fini de créer vvos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
+            divRef.appendChild(h1);
+            divRef.appendChild(form);
+
         },
         error: function(res,stat,err){
             console.log(res.responseText);

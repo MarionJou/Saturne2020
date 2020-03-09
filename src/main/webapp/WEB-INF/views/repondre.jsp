@@ -21,7 +21,9 @@
         <div id="gauche" class="box"> <p id="compte_a_rebours"> </p>
             <script type="text/javascript">
 
-            var diff = 50;
+
+            var diff =50;
+
             var date_evenement = new Date((new Date()).getTime() + diff*1000);
 
             function compte_a_rebours()
@@ -92,7 +94,9 @@
 
                 else
                 {
-                    finTest(${nombre});
+
+                    finTest(this,${nombre},${personneId});
+
                     console.log("miaou");
                 }
 
@@ -110,6 +114,8 @@
             <form action="envRep.do" method="POST">
                 <input type="hidden" value="${nombre}" name="nombre"/>
                 <input type="hidden" value="${test.testId}" name="testId"/>
+                <input type="hidden" value="${personneId}" name="personneId"/>
+
                 <c:forEach var="question" items="${quesRep}">
                     <c:choose>
                         <c:when test= "${question.idQues%2==0}">
@@ -145,18 +151,7 @@
             </form>
         </div>
         <div id="droite" class="box"> 
-            <table>
-                <tr> 
-                    <td> Test de français</td>
-                    <td> 12/02/2020 </td>
-                    <td> 24/02/2020 </td>
-                </tr>
-                <tr> 
-                    <td> Test de maths </td>
-                    <td> 12/02/2020 </td>
-                    <td> 24/02/2020 </td>
-                </tr>
-            </table>
+
         </div>
     </body>
 </html>

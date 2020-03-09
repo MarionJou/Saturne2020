@@ -14,7 +14,8 @@ function creerTest(ref){
             heureFin: document.getElementsByName("heureFin")[0].value,
             duree: document.getElementsByName("duree")[0].value,
             notationId: selNot.options[indexNot].value,
-            groupeId: selNot.options[indexGro].value,
+            groupeId: selGro.options[indexGro].value,
+
             quizId: selQui.options[indexQui].value
         },
         method: 'POST',
@@ -119,6 +120,12 @@ function allouerPoints(ref,n){
             bouton.textContent="Revenir au menu";
             form.setAttribute("action","valider.do");
             form.setAttribute("method","POST");
+            var hidden = document.createElement("INPUT");
+            hidden.setAttribute("name","id");
+            hidden.type="hidden";
+            hidden.value=document.getElementsByName("personneId")[0].value;
+            form.appendChild(hidden);
+
             form.appendChild(bouton);
             var h1 = document.createElement("H1");
             h1.textContent="Vous avez fini de créer votre session de test, pour revenir au menu appuyez sur le bouton ci dessous.";

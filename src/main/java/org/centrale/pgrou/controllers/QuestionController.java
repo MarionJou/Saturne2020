@@ -5,6 +5,7 @@
  */
 package org.centrale.pgrou.controllers;
 
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -89,8 +90,11 @@ public class QuestionController {
         String enonceQues = question.getString("enonce");
         String estPrivStr = question.getString("estPrivee");
         Boolean estPrivee = Boolean.parseBoolean(estPrivStr);
+        String persIdStr = request.getParameter("personneId");
+        int persId = Integer.parseInt(persIdStr);
         
-        Optional<Personne> pers = personneRepository.findById(1);
+        Optional<Personne> pers = personneRepository.findById(persId);
+
         Question aQuestion = new Question();
         
         Long millis = System.currentTimeMillis();
@@ -174,9 +178,13 @@ public class QuestionController {
                 
             }
         }
-        List<Question> listQuestion = questionRepository.findAll();
+        String persIdStr = request.getParameter("personneId");
+        int id = Integer.parseInt(persIdStr);
+        List<Question> listQuestion = questionRepository.findWithPersonne(id);
         returned = new ModelAndView("question");
         returned.addObject("listQuestion",listQuestion);
+        returned.addObject("personneId",id);
+
         return returned;
     }
 
@@ -209,8 +217,12 @@ public class QuestionController {
     returned.addObject("listReponses",listQcmRep);
     
     List<Motcle> colMotCle = motcleRepository.findWithIdQues(aQuestion.getQuestionid());
+
+    String idPers = request.getParameter("personneId");
     returned.addObject("listMotsCles",colMotCle); 
     returned.addObject("typeQues",typeQues);
+    returned.addObject("personneId",idPers);
+
     return returned;
     }
 
@@ -301,10 +313,13 @@ public class QuestionController {
         questionRepository.flush();
         return returned.addObject("theResponse",object.toString());
     }
-    
-    @RequestMapping(value="ecranCreation.do",method=RequestMethod.GET)
+
+    @RequestMapping(value="ecranCreation.do",method=RequestMethod.POST)
     public ModelAndView ecranCreation(HttpServletRequest request) throws ParseException {
+        String id = request.getParameter("personneId");
         ModelAndView returned = new ModelAndView("questRep");
+        returned.addObject("personneId",id);
+
         return returned;
     }
 }

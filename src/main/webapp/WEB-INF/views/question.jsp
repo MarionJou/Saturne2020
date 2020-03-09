@@ -31,19 +31,33 @@
                         <th>
                             <form action="deleteQuestion.do" method="POST">
                                 <input type ="hidden" name="id" value="${question.questionid}" />
+                                <input type="hidden" value="${personneId}" name="personneId" />
+
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
                             <form action="modifQuestion.do" method="POST">
                                 <input type ="hidden" name="id" value="${question.questionid}" />
+
+                                <input type="hidden" value="${personneId}" name="personneId" />
+
                                 <button><img src="img/edit.png" alt="delete" height="20" /></button>
                             </form>
                         </th>
                     </tr>                    
                 </c:forEach>
             </table>
-            <a href="ecranCreation.do">Créer une question</a>
+
+            <form action="ecranCreation.do" method="POST">
+                <input type="hidden" name="personneId" value="${personneId}"/>
+                <button>Créer une question</button>
+            </form>
         </div>
         <div id="droite" class="box"> 
+            <form action="versMenuProf.do" method="POST">
+                <input type="hidden" name="id" value="${personneId}"/>
+                <button>Revenir au menu principal</button>
+            </form>
+
         </div>
         <footer> Mdr j'ai repris ton truc Marion </footer>
     </body>

@@ -27,6 +27,9 @@
                             <td>${test.nomQuiz}</td>
                             <td>Durée: ${test.dureeStr}</td>
                             <td><input type="hidden" name="id" value="${test.testId}">
+
+                                <input type="hidden" name="personneId" value="${personneId}">
+
                                 <button type="submit">Répondre</button>
                             </td>
                         </tr>
@@ -35,6 +38,12 @@
             </table>
         </div>
         <div id="droite" class="box"> 
+
+            <form action="versMenuProf.do" method="POST">
+                <input type="hidden" name="id" value="${personneId}"/>
+                <button>Revenir au menu principal</button>
+            </form>
+
         </div>
     </body>
 </html>

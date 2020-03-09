@@ -57,52 +57,60 @@ public class SessionController {
     private QuestionRepository questionRepository;
     
     
-    @RequestMapping(value="index.do",method=RequestMethod.GET)
-    public ModelAndView handleGet() {
-        return new ModelAndView("index");
-    }
-    
-    @RequestMapping(value="index.do",method=RequestMethod.POST)
-    public ModelAndView handlePost(@ModelAttribute("User")User anUser) {
-        ModelAndView returned;
-        if ((anUser.getUser().equals("Marion")) && (anUser.getPasswd().equals("admin"))){
-            List<Notation> listNotation = notationRepository.findAll();
-            List<Groupe> listGroupe = groupeRepository.findAll();
-            List<Quiz> listQuiz = quizRepository.findAll();
-            List<Test> listTest = testRepository.findAll();
-            returned = new ModelAndView("session");
-            returned.addObject("listNotations", listNotation);
-            returned.addObject("listGroupes", listGroupe);
-            returned.addObject("listQuizs",listQuiz);
-            returned.addObject("listTests",listTest);
-        }else if ((anUser.getUser().equals("Judith")) && (anUser.getPasswd().equals("admin"))){
-            List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
-            List<TestAff> listTestAff = new ArrayList();
-            String format = "HH:mm";
-            java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
-            for (Test aTest: listTest){
-                TestAff aTestAff = new TestAff(aTest.getTestid(),aTest.getQuizid().getNomquiz());
-                aTestAff.setDureeStr(formater.format(aTest.getDureemaxtest()));
-                int duree = aTestAff.stringToInt(formater.format(aTest.getDureemaxtest()));
-                aTestAff.setDureeInt(duree);
-                listTestAff.add(aTestAff);
-            }
-            returned = new ModelAndView("affTest");
-            returned.addObject("listTests",listTestAff);
-        } else if ((anUser.getUser().equals("Alban")) && (anUser.getPasswd().equals("admin"))){
-            List<Question> listQuestion = questionRepository.findAll();
-            returned = new ModelAndView("question");
-            returned.addObject("listQuestion",listQuestion);
-        } else if ((anUser.getUser().equals("Pierre")) && (anUser.getPasswd().equals("admin"))){
+
+//    @RequestMapping(value="index.do",method=RequestMethod.GET)
+//    public ModelAndView handleGet() {
+//        return new ModelAndView("index");
+//    }
+//    
+//    @RequestMapping(value="index.do",method=RequestMethod.POST)
+//    public ModelAndView handlePost(@ModelAttribute("User")User anUser) {
+//        ModelAndView returned;
+//        if ((anUser.getUser().equals("Marion")) && (anUser.getPasswd().equals("admin"))){
+//            List<Notation> listNotation = notationRepository.findAll();
+//            List<Groupe> listGroupe = groupeRepository.findAll();
+//            List<Quiz> listQuiz = quizRepository.findAll();
+//            List<Test> listTest = testRepository.findAll();
+//            returned = new ModelAndView("session");
+//            returned.addObject("listNotations", listNotation);
+//            returned.addObject("listGroupes", listGroupe);
+//            returned.addObject("listQuizs",listQuiz);
+//            returned.addObject("listTests",listTest);
+//        }else if ((anUser.getUser().equals("Judith")) && (anUser.getPasswd().equals("admin"))){
+//            List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
+//            List<TestAff> listTestAff = new ArrayList();
+//            String format = "HH:mm";
+//            java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
+//            for (Test aTest: listTest){
+//                TestAff aTestAff = new TestAff(aTest.getTestid(),aTest.getQuizid().getNomquiz());
+//                aTestAff.setDureeStr(formater.format(aTest.getDureemaxtest()));
+//                int duree = aTestAff.stringToInt(formater.format(aTest.getDureemaxtest()));
+//                aTestAff.setDureeInt(duree);
+//                listTestAff.add(aTestAff);
+//            }
+//            returned = new ModelAndView("affTest");
+//            returned.addObject("listTests",listTestAff);
+//        } else if ((anUser.getUser().equals("Alban")) && (anUser.getPasswd().equals("admin"))){
 //            List<Question> listQuestion = questionRepository.findAll();
-            returned = new ModelAndView("quiz");
+//            returned = new ModelAndView("question");
 //            returned.addObject("listQuestion",listQuestion);
-        }else{
-            returned = new ModelAndView("index");
-        }
-        return returned;
-    }
-    
+//        } else if ((anUser.getUser().equals("Pierre")) && (anUser.getPasswd().equals("admin"))){
+////            List<Question> listQuestion = questionRepository.findAll();
+//            returned = new ModelAndView("quiz");
+////            returned.addObject("listQuestion",listQuestion);
+//        } else if ((anUser.getUser().equals("Amine")) && (anUser.getPasswd().equals("admin"))){
+//            List<Groupe> listGroupe = groupeRepository.findAll();
+//            List<Test> listTest = testRepository.findWithPersonne(1);
+//            returned = new ModelAndView("affResultat");
+//            returned.addObject("listGroupe",listGroupe);
+//            returned.addObject("listTest",listTest);
+//        }else{
+//            returned = new ModelAndView("index");
+//        }
+//        return returned;
+//    }
+//    
+
     @RequestMapping(value="creerTest.do",method=RequestMethod.POST)
     public ModelAndView creerTest1(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -189,17 +197,24 @@ public class SessionController {
 
         
     @RequestMapping(value="valider.do",method=RequestMethod.POST)
-    public ModelAndView handlePost2() {
-        ModelAndView returned;
+
+    public ModelAndView handlePost2(HttpServletRequest request) {
+        String idStr = request.getParameter("id");
+        int id = Integer.parseInt(idStr);
+        ModelAndView returned = new ModelAndView();
         List<Notation> listNotation = notationRepository.findAll();
         List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Quiz> listQuiz = quizRepository.findAll();
-        List<Test> listTest = testRepository.findAll();
+        List<Quiz> listQuiz = quizRepository.findWithPersonne(id);
+        List<Test> listTest = testRepository.findWithPersonne(id);
+
         returned = new ModelAndView("session");
         returned.addObject("listNotations", listNotation);
         returned.addObject("listGroupes", listGroupe);
         returned.addObject("listQuizs",listQuiz);
         returned.addObject("listTests",listTest);
+
+        returned.addObject("personneId",id);
+
         return returned;
     }
     
@@ -214,14 +229,22 @@ public class SessionController {
                 testRepository.delete(test.get());
             }
         }
+
+        String persIdStr = request.getParameter("personneId");
+        int persId = Integer.parseInt(persIdStr);
         List<Notation> listNotation = notationRepository.findAll();
         List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Quiz> listQuiz = quizRepository.findAll();
-        List<Test> listTest = testRepository.findAll();
+        List<Quiz> listQuiz = quizRepository.findWithPersonne(persId);
+        List<Test> listTest = testRepository.findWithPersonne(persId);
+        returned = new ModelAndView("session");
+
         returned.addObject("listNotations", listNotation);
         returned.addObject("listGroupes", listGroupe);
         returned.addObject("listQuizs",listQuiz);
         returned.addObject("listTests",listTest);
+
+        returned.addObject("personneId",persId);
+
         return returned;
     }
 
