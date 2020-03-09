@@ -20,7 +20,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QcmRepository extends JpaRepository<Qcm,Integer>{
     @Query(value="SELECT * FROM public.qcm \n" +
-            "WHERE qcmid=?1",nativeQuery=true)
+            "WHERE questionid=?1",nativeQuery=true)
     //List<Test> findWithParameters(@Param("date")Date date,@Param("personne")Personne personne);
-    public Qcm findWithParameters(int id);
+    public  Qcm findWithParameters(int id);
 }

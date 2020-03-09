@@ -5,8 +5,10 @@
  */
 package org.centrale.pgrou.repositories;
 
+import java.util.List;
 import org.centrale.pgrou.items.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,5 +17,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface QuestionRepository extends JpaRepository<Question,Integer>{
-    
+    @Query(value="SELECT * FROM question WHERE personneid=?1;", nativeQuery=true)
+    public List<Question> findWithPersonne(int personneid);
 }

@@ -21,4 +21,7 @@ import org.springframework.stereotype.Repository;
 public interface ReponseRepository extends JpaRepository<Reponse,Integer>{
     @Query(value="SELECT r FROM Reponse r WHERE r.questionid=:questionid")
     List<Reponse> findWithParameter(@Param("questionid")Question questionid);
+    
+    @Query(value="SELECT correcte FROM reponse WHERE questionid=?1 ORDER BY reponseid;",nativeQuery=true)
+    public List<Boolean> findCorrectes(int idQuestion);
 }

@@ -5,8 +5,10 @@
  */
 package org.centrale.pgrou.repositories;
 
+
 import org.centrale.pgrou.items.Notation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,5 +17,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface NotationRepository extends JpaRepository<Notation,Integer>{
-    
+    @Query(value="SELECT notationid FROM evaluation INNER JOIN test USING (testid) WHERE evaluationid =?1;",nativeQuery=true)
+    public int findNotationid(int idEval);
 }
