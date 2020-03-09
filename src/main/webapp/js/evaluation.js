@@ -5,7 +5,7 @@
  */
 
 
-function finTest(n){
+function finTest(ref,n,persId){
     console.log("c'est fini");
     var gauche = document.getElementById("gauche");
     deleteAll(gauche);
@@ -32,23 +32,28 @@ function finTest(n){
         data: {
             "nombre": n,
             "questions": JSON.stringify(listQues),
-            "testId": testId
+            "testId": testId,
+            "personneId": persId
         },
         method: "POST",
         success: function(result){
-//            var divRef = getNextParentTag(ref,"DIV");
-//            deleteAll(divRef);
-//            var form = document.createElement("FORM");
-//            var bouton = document.createElement("BUTTON");
-//            bouton.textContent="Revenir au menu";
-//            form.setAttribute("action","valider.do");
-//            form.setAttribute("method","POST");
-//            form.appendChild(bouton);
-//            var h1 = document.createElement("H1");
-//            h1.textContent="Vous avez fini de créer votre session de test, pour revenir au menu appuyez sur le bouton ci dessous.";
-//            divRef.appendChild(h1);
-//            divRef.appendChild(form);
-            document.location.href="tempsEcouler.do";
+            var divRef = document.getElementById("centre");
+            deleteAll(divRef);
+            var form = document.createElement("FORM");
+            var bouton = document.createElement("BUTTON");
+            bouton.textContent="Revenir au menu";
+            form.setAttribute("action","versListTest.do");
+            form.setAttribute("method","POST");
+            var hidden = document.createElement("INPUT");
+            hidden.setAttribute("name","id");
+            hidden.type="hidden";
+            hidden.value=persId;
+            form.appendChild(hidden);
+            form.appendChild(bouton);
+            var h1 = document.createElement("H1");
+            h1.textContent="Votre temps est écoulé.";
+            divRef.appendChild(h1);
+            divRef.appendChild(form);
             console.log("Youpi");
         },
         error: function(res,stat,err){

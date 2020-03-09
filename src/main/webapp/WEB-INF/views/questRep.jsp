@@ -21,6 +21,7 @@
         <header> </header>
         <div id="gauche" class="box"> 
             <h1> Liste des questions déjà crées </h1>
+            <input type="hidden" name="personneId" value="${personneId}"/>
             <table>
                 <tr> 
                     <th> Enoncé </th>
@@ -35,7 +36,13 @@
                         <th>
                             <form action="deleteQuestion.do" method="POST">
                                 <input type ="hidden" name="id" value="${question.questionid}" />
+                                <input type="hidden" value="${personneId}" name="personneId" />
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
+                            </form>
+                            <form action="modifQuestion.do" method="POST">
+                                <input type ="hidden" name="id" value="${question.questionid}" />
+                                <input type="hidden" value="${personneId}" name="personneId" />
+                                <button><img src="img/edit.png" alt="delete" height="20" /></button>
                             </form>
                         </th>
                     </tr>                    
@@ -104,7 +111,7 @@
                     </td>
                 </tr>
             </table>
-            <button onClick="valider();">Créer les réponses</button>
+            <button onClick="valider(this);">Créer les réponses</button>
         </div>
         <div id="droite" class="box"> 
         </div>
