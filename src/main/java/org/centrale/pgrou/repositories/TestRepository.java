@@ -16,15 +16,18 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
+
  * @author Marion
+
  */
 @Repository
 public interface TestRepository extends JpaRepository<Test,Integer>{
     @Query(value="SELECT * FROM public.test \n" +
             "INNER JOIN contenugroupe\n" +
             "USING (groupeid)\n" +
-            "WHERE personneid=?2 AND datedebuttest<=?1 AND datefintest>=?1 ;",nativeQuery=true) //AND testid NOT IN (SELECT testid FROM evaluation)
-    //List<Test> findWithParameters(@Param("date")Date date,@Param("personne")Personne personne);
+
+            "WHERE personneid=?2 AND datedebuttest<=?1 AND datefintest>=?1 AND testid NOT IN (SELECT testid FROM evaluation);",nativeQuery=true)
+   
     public List<Test> findWithParameters(Date date,int personne);
     
     @Query(value="SELECT * FROM test INNER JOIN quiz USING (quizid) WHERE personneid=?1;", nativeQuery=true)
@@ -33,4 +36,5 @@ public interface TestRepository extends JpaRepository<Test,Integer>{
     //SELECT * FROM test WHERE groupeid=2;
     @Query(value="SELECT * FROM test WHERE groupeid=?1;", nativeQuery=true)
     public List<Test> findWithGroupe(int groupeid);
+
 }

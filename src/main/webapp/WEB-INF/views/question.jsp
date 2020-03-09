@@ -32,17 +32,21 @@
                             <form action="deleteQuestion.do" method="POST">
                                 <input type ="hidden" name="id" value="${question.questionid}" />
                                 <input type="hidden" value="${personneId}" name="personneId" />
+
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
                             <form action="modifQuestion.do" method="POST">
                                 <input type ="hidden" name="id" value="${question.questionid}" />
+
                                 <input type="hidden" value="${personneId}" name="personneId" />
+
                                 <button><img src="img/edit.png" alt="delete" height="20" /></button>
                             </form>
                         </th>
                     </tr>                    
                 </c:forEach>
             </table>
+
             <form action="ecranCreation.do" method="POST">
                 <input type="hidden" name="personneId" value="${personneId}"/>
                 <button>Créer une question</button>
@@ -53,6 +57,7 @@
                 <input type="hidden" name="id" value="${personneId}"/>
                 <button>Revenir au menu principal</button>
             </form>
+
         </div>
         <footer> Mdr j'ai repris ton truc Marion </footer>
     </body>

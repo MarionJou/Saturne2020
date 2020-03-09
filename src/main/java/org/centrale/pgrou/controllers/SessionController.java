@@ -57,6 +57,7 @@ public class SessionController {
     private QuestionRepository questionRepository;
     
     
+
 //    @RequestMapping(value="index.do",method=RequestMethod.GET)
 //    public ModelAndView handleGet() {
 //        return new ModelAndView("index");
@@ -109,6 +110,7 @@ public class SessionController {
 //        return returned;
 //    }
 //    
+
     @RequestMapping(value="creerTest.do",method=RequestMethod.POST)
     public ModelAndView creerTest1(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -195,6 +197,7 @@ public class SessionController {
 
         
     @RequestMapping(value="valider.do",method=RequestMethod.POST)
+
     public ModelAndView handlePost2(HttpServletRequest request) {
         String idStr = request.getParameter("id");
         int id = Integer.parseInt(idStr);
@@ -203,12 +206,15 @@ public class SessionController {
         List<Groupe> listGroupe = groupeRepository.findAll();
         List<Quiz> listQuiz = quizRepository.findWithPersonne(id);
         List<Test> listTest = testRepository.findWithPersonne(id);
+
         returned = new ModelAndView("session");
         returned.addObject("listNotations", listNotation);
         returned.addObject("listGroupes", listGroupe);
         returned.addObject("listQuizs",listQuiz);
         returned.addObject("listTests",listTest);
+
         returned.addObject("personneId",id);
+
         return returned;
     }
     
@@ -223,6 +229,7 @@ public class SessionController {
                 testRepository.delete(test.get());
             }
         }
+
         String persIdStr = request.getParameter("personneId");
         int persId = Integer.parseInt(persIdStr);
         List<Notation> listNotation = notationRepository.findAll();
@@ -230,11 +237,14 @@ public class SessionController {
         List<Quiz> listQuiz = quizRepository.findWithPersonne(persId);
         List<Test> listTest = testRepository.findWithPersonne(persId);
         returned = new ModelAndView("session");
+
         returned.addObject("listNotations", listNotation);
         returned.addObject("listGroupes", listGroupe);
         returned.addObject("listQuizs",listQuiz);
         returned.addObject("listTests",listTest);
+
         returned.addObject("personneId",persId);
+
         return returned;
     }
 

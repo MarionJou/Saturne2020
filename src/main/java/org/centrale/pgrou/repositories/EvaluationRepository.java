@@ -5,10 +5,13 @@
  */
 package org.centrale.pgrou.repositories;
 
+
 import java.util.List;
 import org.centrale.pgrou.items.Evaluation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,7 +20,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation,Integer>{
-    
+
     
     @Query(value="SELECT * FROM evaluation WHERE testid=?2 \n" +
 "AND personneid IN(SELECT personneid FROM contenugroupe WHERE groupeid=?1);", nativeQuery=true)
@@ -28,4 +31,5 @@ public interface EvaluationRepository extends JpaRepository<Evaluation,Integer>{
     
     @Query(value="SELECT * FROM evaluation WHERE testid=?1;", nativeQuery=true)
     public List<Evaluation> findWithTest(int testid);
+
 }

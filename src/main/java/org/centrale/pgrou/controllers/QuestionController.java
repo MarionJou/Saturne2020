@@ -6,7 +6,9 @@
 package org.centrale.pgrou.controllers;
 
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -92,6 +94,7 @@ public class QuestionController {
         int persId = Integer.parseInt(persIdStr);
         
         Optional<Personne> pers = personneRepository.findById(persId);
+
         Question aQuestion = new Question();
         
         Long millis = System.currentTimeMillis();
@@ -181,6 +184,7 @@ public class QuestionController {
         returned = new ModelAndView("question");
         returned.addObject("listQuestion",listQuestion);
         returned.addObject("personneId",id);
+
         return returned;
     }
 
@@ -213,10 +217,12 @@ public class QuestionController {
     returned.addObject("listReponses",listQcmRep);
     
     List<Motcle> colMotCle = motcleRepository.findWithIdQues(aQuestion.getQuestionid());
+
     String idPers = request.getParameter("personneId");
     returned.addObject("listMotsCles",colMotCle); 
     returned.addObject("typeQues",typeQues);
     returned.addObject("personneId",idPers);
+
     return returned;
     }
 
@@ -307,12 +313,13 @@ public class QuestionController {
         questionRepository.flush();
         return returned.addObject("theResponse",object.toString());
     }
-    
+
     @RequestMapping(value="ecranCreation.do",method=RequestMethod.POST)
     public ModelAndView ecranCreation(HttpServletRequest request) throws ParseException {
         String id = request.getParameter("personneId");
         ModelAndView returned = new ModelAndView("questRep");
         returned.addObject("personneId",id);
+
         return returned;
     }
 }

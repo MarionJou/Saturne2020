@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ import org.centrale.pgrou.repositories.EvaluationreponseRepository;
 import org.centrale.pgrou.repositories.NotationRepository;
 import org.centrale.pgrou.repositories.PersonneRepository;
 import org.centrale.pgrou.repositories.QcmRepository;
+
 import org.centrale.pgrou.repositories.QcmrepRepository;
 import org.centrale.pgrou.repositories.QcmrepevalRepository;
 import org.centrale.pgrou.repositories.ReponseRepository;
@@ -74,8 +76,11 @@ public class RpseTestController {
     private QcmrepevalRepository qcmrepevalRepository;
     @Autowired
     private NotationRepository notationRepository;
+
     @Autowired
     private QcmRepository qcmRepository;
+
+
     
     @RequestMapping(value="repondre.do",method=RequestMethod.POST)
     public ModelAndView handlePost(HttpServletRequest request) {
@@ -94,6 +99,7 @@ public class RpseTestController {
             unTestAff.setDureeStr(dureeStr);
             int dureeInt = unTestAff.stringToInt(dureeStr);
             unTestAff.setDureeInt(dureeInt);
+
             returned.addObject("test",unTestAff);
             List<Contenuquiz> quizCont = contenuquizRepository.findWithParameter(unTest.getQuizid());
             Integer i = 1;
@@ -108,6 +114,7 @@ public class RpseTestController {
                         listRepQCM.add(repQCM);
                     }                    
                 }
+
                 Qcm qcm = qcmRepository.findWithParameters(question.getQuestionid());
                 Boolean repUni= qcm.getRepunique();
                 QuesRepQCM ques = new QuesRepQCM(question.getEnonce(),c.getContenuquizid(),listRepQCM, repUni, i);
@@ -130,13 +137,16 @@ public class RpseTestController {
         returned = new ModelAndView("index");
     }
     return returned;
+
     }
     
     @RequestMapping(value="envRep.do",method=RequestMethod.POST)
     public ModelAndView envRep(HttpServletRequest request) throws ParseException {
         ModelAndView returned;
+
         String personneIdStr = request.getParameter("personneId");
         int personneId = Integer.parseInt(personneIdStr);
+
         List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1);
         List<TestAff> listTestAff = new ArrayList();
         String format = "HH:mm";
@@ -158,17 +168,21 @@ public class RpseTestController {
         if (unTest.isPresent()){
             Test leTest = unTest.get();
             eval.setTestid(leTest);
-            
+
             Optional<Personne> unePers = personneRepository.findById(personneId); 
             if (unePers.isPresent()){
                 Personne laPers = unePers.get();
                 eval.setPersonneid(laPers); 
+
                 java.util.Date date = new java.util.Date(); //Je mets la date d'aujourd'hui
                 eval.setDatedebutevaluation(date);
                 DateFormat dfb = new SimpleDateFormat("HH:mm");
                 Date timeDuree = dfb.parse("03:00");//Je mets 3 heures de manière arbitraire
                 eval.setDureeevaluation(timeDuree);
+
                 Evaluation evalId = evaluationRepository.save(eval);
+
+  
                 
                 
                 //Crééons maintenant evaluationQuestion et evaluationReponse
@@ -200,9 +214,11 @@ public class RpseTestController {
                                 qcmRepEval.setCochee(false);/////////////////
                                 String[] strIdRep = request.getParameterValues("r"+idQues);//On récupère les réponses cochées
                                 for (int j =0; j<strIdRep.length; j++){ //Régler le pb si c'est vide?
+
                                     int IdQCMRep = Integer.parseInt(strIdRep[j]);
                                     int azer = qcmRep.getQcmrepid();
                                     if (IdQCMRep==azer){
+
                                         qcmRepEval.setCochee(true);
                                     }
                                 }
@@ -215,14 +231,18 @@ public class RpseTestController {
                 }
                 float note = corriger(evalId.getEvaluationid());
                 System.out.println("Vous avez obtenu la note de: "+note); 
+
                 evalId.setNote(note);
                 evaluationRepository.save(evalId);
+
             }
         }
         
         returned = new ModelAndView("affTest");
         returned.addObject("listTests",listTestAff);
+
         returned.addObject("personneId",personneId);
+
         return returned;
     }
 
@@ -230,8 +250,10 @@ public class RpseTestController {
     public ModelAndView tempsEcoulerPOST(HttpServletRequest request) throws ParseException{
         ModelAndView returned = new ModelAndView("ajax");
         JSONObject object = new JSONObject();
+
         String personneIdStr = request.getParameter("personneId");
         int personneId = Integer.parseInt(personneIdStr);
+
         List<Test> listTest = testRepository.findAll();
         Evaluation eval = new Evaluation();
         
@@ -241,7 +263,9 @@ public class RpseTestController {
         if (unTest.isPresent()){
             Test leTest = unTest.get();
             eval.setTestid(leTest);
+
             Optional<Personne> unePers = personneRepository.findById(personneId); //Tant que y a pas de co je mets une personne de façon arbitraire
+
             if (unePers.isPresent()){
                 Personne laPers = unePers.get();
                 eval.setPersonneid(laPers);
@@ -291,10 +315,12 @@ public class RpseTestController {
                         }
                     }
                 }
+  
                 float note = corriger(evalId.getEvaluationid());
                 System.out.println("Vous avez obtenu la note de: "+note); 
                 evalId.setNote(note);
                 evaluationRepository.save(evalId);
+
             }
         }
                     
@@ -326,18 +352,21 @@ public class RpseTestController {
         int notationId = notationRepository.findNotationid(idEval);
         List<Contenuquiz> listQuestion = contenuquizRepository.findWithIdEval(idEval);
         for (Contenuquiz question: listQuestion){
+
             Qcm aQcm=qcmRepository.findWithParameters(question.getQuestionid().getQuestionid());
             Evaluationquestion evalQues = evaluationquestionRepository.findWithContenuQuiz(question.getContenuquizid(),idEval);
             Boolean repUni = aQcm.getRepunique();
             List<Boolean> listCorrecte = reponseRepository.findCorrectes(question.getQuestionid().getQuestionid());
             List<Boolean> listCochee =qcmrepevalRepository.findCochees(question.getQuestionid().getQuestionid(),idEval);
             List<Evaluationreponse> evalRep = evaluationreponseRepository.findWithParameters(question.getContenuquizid(),idEval);
+
             switch(notationId){
                 case 1: //Tout ou rien
                     Boolean questionJuste = true; 
                     for (int i=0;i<listCorrecte.size();i++){
                         if (listCorrecte.get(i)!=listCochee.get(i)){
                             questionJuste = false;
+
                             evalRep.get(i).setJuste(false);
                         }else{
                             evalRep.get(i).setJuste(true);
@@ -348,10 +377,12 @@ public class RpseTestController {
                         note=note+question.getNombrepoints();
                     }else{
                         evalQues.setNotequestion((float)0.0);
+
                     }
                     break;
                 case 2: //Pourcentage
                     int noteQuestion = 0;
+
                     if (!repUni){
                         for (int i=0;i<listCorrecte.size();i++){
                             if (listCorrecte.get(i)==listCochee.get(i)){
@@ -376,12 +407,15 @@ public class RpseTestController {
                         }
                     }
                     evalQues.setNotequestion(((float) noteQuestion/listCorrecte.size())*question.getNombrepoints());
+
                     note= note + ( (float) noteQuestion/listCorrecte.size())*question.getNombrepoints();
                     break;
                 case 3: //Points négatifs: on retire 0.5 à chaque mauvaise réponse
                     int nbrBonneRep = 0;
                     int nbrMauvaiseRep = 0;
+
                     int nbreTotBonne = 0;
+
                     float ptsNeg = (float) 0.5;
                     
                     for (int i=0;i<listCorrecte.size();i++){
@@ -390,6 +424,7 @@ public class RpseTestController {
                         }else if (!listCorrecte.get(i) && listCochee.get(i)){
                             nbrMauvaiseRep=nbrMauvaiseRep+1;
                         }
+
                         if (listCorrecte.get(i)){
                             nbreTotBonne=nbreTotBonne+1;
                         }
@@ -408,6 +443,7 @@ public class RpseTestController {
                 evaluationreponseRepository.save(evalRep.get(i));
             }
             evaluationquestionRepository.save(evalQues);
+
         }
         return note;
     }
