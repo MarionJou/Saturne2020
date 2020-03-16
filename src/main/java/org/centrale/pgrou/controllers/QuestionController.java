@@ -6,40 +6,17 @@
 package org.centrale.pgrou.controllers;
 
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.centrale.pgrou.items.Contenuquiz;
-import org.centrale.pgrou.items.Groupe;
-import org.centrale.pgrou.items.Motcle;
-import org.centrale.pgrou.items.Notation;
-import org.centrale.pgrou.items.Personne;
-import org.centrale.pgrou.items.Question;
-import org.centrale.pgrou.items.Qcm;
-import org.centrale.pgrou.items.Reponse;
-import org.centrale.pgrou.items.Qcmrep;
-import org.centrale.pgrou.items.Quiz;
-import org.centrale.pgrou.items.Test;
-import org.centrale.pgrou.repositories.ContenuquizRepository;
-import org.centrale.pgrou.repositories.GroupeRepository;
-import org.centrale.pgrou.repositories.MotcleRepository;
-import org.centrale.pgrou.repositories.NotationRepository;
-import org.centrale.pgrou.repositories.PersonneRepository;
-import org.centrale.pgrou.repositories.QcmRepository;
-import org.centrale.pgrou.repositories.QcmrepRepository;
-import org.centrale.pgrou.repositories.QuizRepository;
-import org.centrale.pgrou.repositories.QuestionRepository;
-import org.centrale.pgrou.repositories.ReponseRepository;
-import org.centrale.pgrou.repositories.TestRepository;
+import org.centrale.pgrou.items.*;
+import org.centrale.pgrou.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,8 +30,6 @@ import org.json.JSONObject;
 @Controller
 public class QuestionController {
     @Autowired
-    private NotationRepository notationRepository;
-    @Autowired
     private MotcleRepository motcleRepository;
     @Autowired
     private PersonneRepository personneRepository;
@@ -67,15 +42,14 @@ public class QuestionController {
     @Autowired
     private QcmRepository qcmRepository;
     
-//    url:"creerQuesRep.do",
-//        data: {
-//            "type": type,
-//            "question": question,
-//            "reponses": listRep.JSON.stringify(),
-//            "motsCles": listMotsCles.JSON.stringify()
-//        },
+
     
-    
+    /**
+     * Fonction qui récupère les informations nécessaires à la création d'une question et qui la créée
+     * @param request
+     * @return un objet nul
+     * @throws ParseException 
+     */
     @RequestMapping(value="creerQuesRep.do",method=RequestMethod.POST)
     public ModelAndView creerQuestRep(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -94,7 +68,6 @@ public class QuestionController {
         int persId = Integer.parseInt(persIdStr);
         
         Optional<Personne> pers = personneRepository.findById(persId);
-
         Question aQuestion = new Question();
         
         Long millis = System.currentTimeMillis();
@@ -154,7 +127,11 @@ public class QuestionController {
 
  
 
-    
+    /**
+     * Fonction qui permet de supprimer une question
+     * @param request on récupère l'id de la question que l'on veut supprimer
+     * @return la page avec la liste des questions déjà crées
+     */
     @RequestMapping(value="deleteQuestion.do",method=RequestMethod.POST)
     public ModelAndView deleteQuestion(HttpServletRequest request) {
         ModelAndView returned = new ModelAndView("question");
@@ -184,11 +161,15 @@ public class QuestionController {
         returned = new ModelAndView("question");
         returned.addObject("listQuestion",listQuestion);
         returned.addObject("personneId",id);
-
         return returned;
     }
 
 
+    /**
+     * Fonction qui permet de modifier une question (sans modifier son type)
+     * @param request on récupère l'id de la question
+     * @return on renvoie un formulaire pré remplie avec les informations de la question
+     */
     @RequestMapping(value="modifQuestion.do",method=RequestMethod.POST)
     public ModelAndView modifQuestion(HttpServletRequest request){
     ModelAndView returned = new ModelAndView("modifQuest");
@@ -208,24 +189,22 @@ public class QuestionController {
     }
     List<Reponse> listRep = reponseRepository.findWithParameter(aQuestion);
     List<Qcmrep> listQcmRep= qcmrepRepository.findWithParameters(aQuestion.getQuestionid());
-//    for (Reponse rep:colReponses){
-//        Collection<Qcmrep> colQcmRep=rep.getQcmrepCollection();
-//        for (Qcmrep qcmRep:colQcmRep){//Y en a qu'un 
-//            listQcmRep.add(qcmRep);
-//        }
-//    }
     returned.addObject("listReponses",listQcmRep);
     
     List<Motcle> colMotCle = motcleRepository.findWithIdQues(aQuestion.getQuestionid());
-
     String idPers = request.getParameter("personneId");
     returned.addObject("listMotsCles",colMotCle); 
     returned.addObject("typeQues",typeQues);
     returned.addObject("personneId",idPers);
-
     return returned;
     }
 
+    /**
+     * Fonction qui permet d'éditer les modifications faîtes à une fonction
+     * @param request: on récupère la question modifiée
+     * @return objet null
+     * @throws ParseException 
+     */
     @RequestMapping(value="modifQuesRep.do",method=RequestMethod.POST)
     public ModelAndView modifQuestRep(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -252,10 +231,7 @@ public class QuestionController {
         Question question1 = questionRepository.save(aQuestion);
         questionRepository.flush();
         
-//        List<Motcle> colMC = motcleRepository.findWithIdQues(idQues);
-//        for (Motcle motCle:colMC){
-//            motcleRepository.delete(motCle);
-//        }
+
         motcleRepository.deleteWithParameter(aQuestion.getQuestionid());
         
         List<Reponse> listRep = reponseRepository.findWithParameter(aQuestion);
@@ -313,13 +289,18 @@ public class QuestionController {
         questionRepository.flush();
         return returned.addObject("theResponse",object.toString());
     }
-
+    
+    /**
+     * Fonction qui permet d'aller sur la page de création d'une question
+     * @param request:
+     * @return
+     * @throws ParseException 
+     */
     @RequestMapping(value="ecranCreation.do",method=RequestMethod.POST)
     public ModelAndView ecranCreation(HttpServletRequest request) throws ParseException {
         String id = request.getParameter("personneId");
         ModelAndView returned = new ModelAndView("questRep");
         returned.addObject("personneId",id);
-
         return returned;
     }
 }

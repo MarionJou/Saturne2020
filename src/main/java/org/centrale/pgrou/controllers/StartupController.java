@@ -63,7 +63,7 @@ public class StartupController {
     @RequestMapping(value="index.do", method=RequestMethod.POST)
     public ModelAndView handlePost(HttpServletRequest request){
         ModelAndView returned = new ModelAndView("index");
-        Security.check(connexionRepository);
+            Security.check(connexionRepository);
         
         String login = request.getParameter("user");
         String mdp = request.getParameter("passwd");
@@ -136,11 +136,16 @@ public class StartupController {
             }
         }
         
+        
         return returned;
     }
 
     
-    //versAffRes.do
+    /**
+     * Fonction qui redirige vers la page des résultats 
+     * @param request: on récupère l'id de la personne pour avoir la liste des tests qu'il a fait
+     * @return 
+     */
     @RequestMapping(value="versAffRes.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersAffTest(HttpServletRequest request){
         Security.check(connexionRepository);
@@ -148,7 +153,7 @@ public class StartupController {
         int id = Integer.parseInt(idStr);
         ModelAndView returned = new ModelAndView();
         List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Test> listTest = testRepository.findWithPersonne(id); //Mettre id 
+        List<Test> listTest = testRepository.findWithPersonne(id);  
         returned = new ModelAndView("affResultat");
         returned.addObject("listGroupe",listGroupe);
         returned.addObject("listTest",listTest);
@@ -156,7 +161,11 @@ public class StartupController {
         return returned;
     }
     
-    //versCreerQuest.do
+    /**
+     * Fonction qui envoie vers la liste des questions déjà créées
+     * @param request: on récupère l'id de la personne pour pouvoir lui associer ses questions
+     * @return 
+     */
     @RequestMapping(value="versCreerQuest.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersCreerQuest(HttpServletRequest request){
         Security.check(connexionRepository);
@@ -170,7 +179,11 @@ public class StartupController {
         return returned;
     }
     
-    
+    /**
+     * Fonction qui envoie vers la page de création de test
+     * @param request: id de la personne
+     * @return 
+     */
     @RequestMapping(value="versCreerTest.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersCreerTest(HttpServletRequest request){
         Security.check(connexionRepository);
@@ -190,6 +203,11 @@ public class StartupController {
         return returned;
     }
     
+    /**
+     * Fonction qui renvoie sur un faux menu de prof où toutes les fonctions sont disponibles
+     * @param request: pour l'id de la personne
+     * @return 
+     */
     @RequestMapping(value="versMenuProf.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersMenuProf(HttpServletRequest request){
         Security.check(connexionRepository);
@@ -205,14 +223,18 @@ public class StartupController {
         return returned;
     }
     
-    
+    /**
+     * Fonction qui envoie vers la liste des tests disponibles
+     * @param request: id de la personne
+     * @return 
+     */
     @RequestMapping(value="versListTest.do", method=RequestMethod.POST)
     public ModelAndView envoyerListTest(HttpServletRequest request){
         Security.check(connexionRepository);
         String idStr = request.getParameter("id");
         int id = Integer.parseInt(idStr);
         ModelAndView returned = new ModelAndView();
-        List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1); //Mettre id
+        List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),id); //Mettre id <!>
         List<TestAff> listTestAff = new ArrayList();
         String format = "HH:mm";
         java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
@@ -226,6 +248,26 @@ public class StartupController {
         returned = new ModelAndView("affTest");
         returned.addObject("listTests",listTestAff);
         returned.addObject("personneId",id);
+        return returned;
+    }
+    
+    /**
+     * Fonction qui renvoie sur un faux menu d'élève où toutes les fonctions sont disponibles
+     * @param request: pour l'id de la personne
+     * @return 
+     */
+    @RequestMapping(value="versMenuEleve.do", method=RequestMethod.POST)
+    public ModelAndView envoyerVersMenuEleve(HttpServletRequest request){
+        Security.check(connexionRepository);
+//        String idStr = request.getParameter("id");
+//        int id = Integer.parseInt(idStr);
+//        Personne person = personneRepository.findById(id).get();
+//        String nom = person.getNom();
+//        String prenom = person.getPrenom();
+        ModelAndView returned = new ModelAndView("AccueilEtudiant");
+//        returned.addObject("prenom", prenom);
+//        returned.addObject("nom", nom);
+//        returned.addObject("personneId", id);
         return returned;
     }
 }

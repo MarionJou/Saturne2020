@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Controller qui permet d'afficher les résultats aux évaluations
  */
 package org.centrale.pgrou.controllers;
 
@@ -37,7 +35,12 @@ public class ResultatController {
     @Autowired
     private PersonneRepository personneRepository;
     
-//    recupTestParGroupe.do
+    /**
+     * Fonction pour récupérer la liste des tests auquels un groupe à accès
+     * @param request l'id du groupe
+     * @return la liste des tests
+     * @throws ParseException 
+     */
     @RequestMapping(value="recupTestParGroupe.do",method=RequestMethod.POST)
     public ModelAndView recupTestParGroupe(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -60,7 +63,12 @@ public class ResultatController {
         return returned.addObject("theResponse",object.toString());
     }
     
-    ///affTestParGroupe.do
+    /**
+     * Fonction qui affiche les résultats à un test choisis après avoir choisis un groupe
+     * @param request l'id du test
+     * @return la liste des notes des élèves avec leur nom, prénom
+     * @throws ParseException 
+     */
     @RequestMapping(value="affTestParGroupe.do",method=RequestMethod.POST)
     public ModelAndView affTestParGroupe(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -72,21 +80,30 @@ public class ResultatController {
         int testid = Integer.parseInt(testStr);
         
         List<Evaluation> listEvaluation = evaluationRepository.findWithGroupeAndTest(groupeid, testid);
+        float nombre = 0;
+        float somme = 0;
         for (Evaluation eval: listEvaluation){
+            nombre = nombre+1;
             JSONObject evalObject = new JSONObject();
             evalObject.accumulate("prenom", eval.getPersonneid().getPrenom());
             evalObject.accumulate("nom", eval.getPersonneid().getNom());
             evalObject.accumulate("note", eval.getNote());
             listObject.put(evalObject);
-            
-            
+            somme = somme+eval.getNote();
         }
-        
+        float moyenne = somme/nombre;
+        object.put("moyenne", moyenne);
         object.put("listEval", listObject);
         return returned.addObject("theResponse",object.toString());
     }
    
-@RequestMapping(value="recupPersonneParGroupe.do",method=RequestMethod.POST)
+    /**
+     * Fonction pour récupérer la liste des personnes appartenant à un groupe 
+     * @param request l'id du groupe
+     * @return la liste des personnes
+     * @throws ParseException 
+     */
+    @RequestMapping(value="recupPersonneParGroupe.do",method=RequestMethod.POST)
     public ModelAndView recupPersonneParGroupe(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
         JSONObject object = new JSONObject();
@@ -108,7 +125,12 @@ public class ResultatController {
     }
 
 
-    ///affTestParGroupe.do
+    /**
+     * Fonction qui affiche les notes pour toutes les évaluations qu'une personne a passées
+     * @param request: l'id de la personne
+     * @return le nom des évaluations et la note obtenue par l'élève
+     * @throws ParseException 
+     */
     @RequestMapping(value="affTestParPers.do",method=RequestMethod.POST)
     public ModelAndView affTestParPers(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -120,8 +142,7 @@ public class ResultatController {
         List<Evaluation> listEvaluation = evaluationRepository.findWithPers(persId);
         for (Evaluation eval: listEvaluation){
             JSONObject evalObject = new JSONObject();
-            evalObject.accumulate("prenom", eval.getPersonneid().getPrenom());
-            evalObject.accumulate("nom", eval.getPersonneid().getNom());
+            evalObject.accumulate("nomEval", eval.getTestid().getQuizid().getNomquiz());
             evalObject.accumulate("note", eval.getNote());
             listObject.put(evalObject);
             
@@ -133,7 +154,12 @@ public class ResultatController {
     }
 
     
-    //affTest
+    /**
+     * Fonction qui affiche la liste des résultats pour un test choisi
+     * @param request: id du test
+     * @return liste des élèves et de leur note
+     * @throws ParseException 
+     */    
     @RequestMapping(value="affTest.do",method=RequestMethod.POST)
     public ModelAndView affTest(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
@@ -142,16 +168,19 @@ public class ResultatController {
         String testStr = request.getParameter("test");
         int testId = Integer.parseInt(testStr);
         
+        float nombre=0;
+        float somme=0;
         List<Evaluation> listEvaluation = evaluationRepository.findWithTest(testId);
         for (Evaluation eval: listEvaluation){
+            nombre=nombre+1;
             JSONObject evalObject = new JSONObject();
             evalObject.accumulate("prenom", eval.getPersonneid().getPrenom());
             evalObject.accumulate("nom", eval.getPersonneid().getNom());
             evalObject.accumulate("note", eval.getNote());
             listObject.put(evalObject);
-            
-            
+            somme=somme+eval.getNote();            
         }
+        object.put("moyenne",somme/nombre);
         
         object.put("listEval", listObject);
         return returned.addObject("theResponse",object.toString());
