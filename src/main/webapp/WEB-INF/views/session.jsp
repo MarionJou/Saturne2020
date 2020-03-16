@@ -29,7 +29,6 @@
                             <form action="delete.do" method="POST">
                                 <input type ="hidden" name="id" value="${test.testid}" />
                                 <input type ="hidden" name="personneId" value="${personneId}" />
-
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
                         </th>
@@ -90,7 +89,6 @@
                 <input type="hidden" name="id" value="${personneId}"/>
                 <button>Revenir au menu principal</button>
             </form>
-
         </div>
         <footer> Coucou </footer>
     </body>

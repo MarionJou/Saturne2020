@@ -104,10 +104,8 @@
                     </td>
                 </tr>
             </table>
-
             <input type="hidden" value="${personneId}" name="personneId" />
             <button onClick="validerModif(this);">Créer les réponses</button>
-
         </div>
         <div id="droite" class="box"> 
         </div>

@@ -20,12 +20,9 @@
         <header> </header>
         <div id="gauche" class="box"> <p id="compte_a_rebours"> </p>
             <script type="text/javascript">
-
-
-            var diff =50;
-
-            var date_evenement = new Date((new Date()).getTime() + diff*1000);
-
+            var diff =120;
+            var date_evenement = new Date( ${currentDate} + diff*1000);
+            
             function compte_a_rebours()
 
             {
@@ -94,9 +91,7 @@
 
                 else
                 {
-
                     finTest(this,${nombre},${personneId});
-
                     console.log("miaou");
                 }
 
@@ -115,7 +110,7 @@
                 <input type="hidden" value="${nombre}" name="nombre"/>
                 <input type="hidden" value="${test.testId}" name="testId"/>
                 <input type="hidden" value="${personneId}" name="personneId"/>
-
+                <input type="hidden" value="${currentDate}" name="currentDate"/>
                 <c:forEach var="question" items="${quesRep}">
                     <c:choose>
                         <c:when test= "${question.idQues%2==0}">
@@ -151,7 +146,6 @@
             </form>
         </div>
         <div id="droite" class="box"> 
-
         </div>
     </body>
 </html>

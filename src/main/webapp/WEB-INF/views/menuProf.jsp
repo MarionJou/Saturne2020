@@ -57,6 +57,11 @@
                             <button type="submit">Voir la liste des tests</button>
                         </form></td>
                 </tr>
+                <tr>
+                    <td><form action="versMenuEleve.do" method="POST">
+                            <button type="submit">Voir l'auto évaluation</button>
+                        </form></td>
+                </tr>
             </table>
             <form method="POST" action="Disconnect.do">
                 <input type="hidden" name="code" id="code" value="${code}"/>
