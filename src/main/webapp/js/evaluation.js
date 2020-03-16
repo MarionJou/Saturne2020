@@ -4,10 +4,12 @@
  * and open the template in the editor.
  */
 
-
+function miaou(date){
+    var dateInt=new Date.parse('');
+    console.log(dateInt);
+}
 
 function finTest(ref,n,persId){
-
     console.log("c'est fini");
     var gauche = document.getElementById("gauche");
     deleteAll(gauche);
@@ -34,7 +36,6 @@ function finTest(ref,n,persId){
         data: {
             "nombre": n,
             "questions": JSON.stringify(listQues),
-
             "testId": testId,
             "personneId": persId
         },
@@ -57,7 +58,6 @@ function finTest(ref,n,persId){
             h1.textContent="Votre temps est écoulé.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
-
             console.log("Youpi");
         },
         error: function(res,stat,err){

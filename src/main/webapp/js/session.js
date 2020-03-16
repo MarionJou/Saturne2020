@@ -15,7 +15,6 @@ function creerTest(ref){
             duree: document.getElementsByName("duree")[0].value,
             notationId: selNot.options[indexNot].value,
             groupeId: selGro.options[indexGro].value,
-
             quizId: selQui.options[indexQui].value
         },
         method: 'POST',
@@ -125,7 +124,6 @@ function allouerPoints(ref,n){
             hidden.type="hidden";
             hidden.value=document.getElementsByName("personneId")[0].value;
             form.appendChild(hidden);
-
             form.appendChild(bouton);
             var h1 = document.createElement("H1");
             h1.textContent="Vous avez fini de créer votre session de test, pour revenir au menu appuyez sur le bouton ci dessous.";

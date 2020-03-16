@@ -103,7 +103,6 @@ function ajoutterMotCle(ref){
 }
 
 
-
 function valider(ref){
     var type = document.getElementsByName("type")[0].value; //Type de question
     if (type=="1"){
@@ -146,14 +145,12 @@ function valider(ref){
         data: {
             "type": type,
             "personneId": document.getElementsByName("personneId")[0].value,
-
             "question": JSON.stringify(question),
             "reponses": JSON.stringify(listRep),
             "motsCles": JSON.stringify(listMotsCles)
         },
         method: 'POST',
         success: function(result){
-
             var divRef = getNextParentTag(ref,"DIV");
             deleteAll(divRef);
             var form = document.createElement("FORM");
@@ -169,10 +166,9 @@ function valider(ref){
             form.appendChild(hidden);
             form.appendChild(bouton);
             var h1 = document.createElement("H1");
-            h1.textContent="Vous avez fini de créer vvos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
+            h1.textContent="Vous avez fini de créer vos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
-
         },
         error: function(res,stat,err){
             console.log(res.responseText);
@@ -195,9 +191,7 @@ function deleteRep(ref){
     ref.parentNode.removeChild(ref);
 }
 
-
 function validerModif(ref){
-
     var type = document.getElementsByName("type")[0].value; //Type de question
     if (type=="1"){
         var listEnonce = document.getElementsByName("enonceRepUni"); //Liste des énoncés de réponse
@@ -265,7 +259,6 @@ function validerModif(ref){
             h1.textContent="Vous avez fini de créer vvos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
-
         },
         error: function(res,stat,err){
             console.log(res.responseText);

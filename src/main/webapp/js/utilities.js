@@ -135,14 +135,13 @@ create new select element and append it to an element
 ------------------------------------------------------------------ */
 function addSelect(currentElement, name, items, elementValue=-1) {
 	var selectElement = document.createElement("SELECT");
-	selectElement.setAttribute("name", name);*
+	selectElement.setAttribute("name", name);
         var optionElement = document.createElement("OPTION");
         optionElement.value = "0";
         var textElement = document.createTextNode("-");
         optionElement.appendChild(textElement);
 
         selectElement.appendChild(optionElement);
-
 	for (var i=0; i < items.length; i++) {
 		var optionElement = document.createElement("OPTION");
 		var valueID = items[i].id;
@@ -159,6 +158,7 @@ function addSelect(currentElement, name, items, elementValue=-1) {
 			selectElement.value = elementValue;
 		}
 	}
+        
 	currentElement.appendChild(selectElement);
 	
 	return selectElement;
