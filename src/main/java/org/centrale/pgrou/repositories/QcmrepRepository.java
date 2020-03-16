@@ -26,5 +26,5 @@ public interface QcmrepRepository extends JpaRepository<Qcmrep,Integer>{
     //List<Test> findWithParameters(@Param("date")Date date,@Param("personne")Personne personne);
     public List<Qcmrep> findWithParameters(int idQues);
     @Query(value="SELECT r FROM Qcmrep r WHERE r.reponseid=:reponseid")
-    List<Qcmrep> findWithParameter(@Param("reponseid")Reponse reponseid);
+    Qcmrep findWithParameter(@Param("reponseid")Reponse reponseid);
 }
