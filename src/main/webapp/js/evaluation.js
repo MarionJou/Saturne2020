@@ -5,9 +5,7 @@
  */
 
 
-
 function finTest(ref,n,persId){
-
     console.log("c'est fini");
     var gauche = document.getElementById("gauche");
     deleteAll(gauche);
@@ -34,9 +32,8 @@ function finTest(ref,n,persId){
         data: {
             "nombre": n,
             "questions": JSON.stringify(listQues),
-
             "testId": testId,
-            "personneId": persId
+            "code": persId
         },
         method: "POST",
         success: function(result){
@@ -45,10 +42,10 @@ function finTest(ref,n,persId){
             var form = document.createElement("FORM");
             var bouton = document.createElement("BUTTON");
             bouton.textContent="Revenir au menu";
-            form.setAttribute("action","versListTest.do");
-            form.setAttribute("method","POST");
+            form.setAttribute("action","index.do");
+            form.setAttribute("method","GET");
             var hidden = document.createElement("INPUT");
-            hidden.setAttribute("name","id");
+            hidden.setAttribute("name","code");
             hidden.type="hidden";
             hidden.value=persId;
             form.appendChild(hidden);
@@ -57,7 +54,6 @@ function finTest(ref,n,persId){
             h1.textContent="Votre temps est écoulé.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
-
             console.log("Youpi");
         },
         error: function(res,stat,err){

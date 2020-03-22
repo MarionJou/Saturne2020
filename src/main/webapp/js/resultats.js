@@ -66,13 +66,17 @@ function affGrpTest(ref,groupe){
         method: 'POST',
         success: function(result){
             var oldTable = document.getElementsByName("affRes");
-            if (oldTable.length>0){
+            while(oldTable.length>0){
                 oldTable[0].parentNode.removeChild(oldTable[0]);
             }
             
             var div = document.getElementById("centre");
             var listEval = result.listEval;
-            
+            var moyenne = result.moyenne;
+            var para =document.createElement("P");
+            para.setAttribute("name","affRes");
+            para.appendChild(document.createTextNode("La moyenne pour ce test est de: "+moyenne));
+            div.appendChild(para);
             var table=creerTableRes(listEval);
             div.appendChild(table);
         },
@@ -164,7 +168,7 @@ function affGrpPers(ref){
             var div = document.getElementById("centre");
             var listEval = result.listEval;
             
-            var table=creerTableRes(listEval);
+            var table=creerTableResPers(listEval);
             div.appendChild(table);
         },
         error: function(res,stat,err){
@@ -187,13 +191,17 @@ function affTest(ref){
         method: 'POST',
         success: function(result){
             var oldTable = document.getElementsByName("affRes");
-            if (oldTable.length>0){
+            while(oldTable.length>0){
                 oldTable[0].parentNode.removeChild(oldTable[0]);
             }
             
             var div = document.getElementById("centre");
             var listEval = result.listEval;
-            
+            var moyenne = result.moyenne;
+            var para =document.createElement("P");
+            para.setAttribute("name","affRes");
+            para.appendChild(document.createTextNode("La moyenne pour ce test est de: "+moyenne));
+            div.appendChild(para);
             var table=creerTableRes(listEval);
             div.appendChild(table);
         },
@@ -202,4 +210,31 @@ function affTest(ref){
         }
         
     });
+}
+
+function creerTableResPers(listEval){
+    var table = document.createElement("TABLE");
+    var tr1 = document.createElement("TR");
+
+    var th1 = document.createElement("TH");
+    th1.appendChild(document.createTextNode("Evaluation"));
+    var th3 = document.createElement("TH");
+    th3.appendChild(document.createTextNode("Note"));
+
+    tr1.appendChild(th1);
+    tr1.appendChild(th3);
+    table.appendChild(tr1);
+
+    for (let i = 0; i < listEval.length; i++){
+        var tr = document.createElement("TR");
+        var td1 = document.createElement("TD");
+        td1.appendChild(document.createTextNode(listEval[i].nomEval));
+        var td3 = document.createElement("TD");
+        td3.appendChild(document.createTextNode(listEval[i].note));
+        tr.appendChild(td1);
+        tr.appendChild(td3);
+        table.appendChild(tr);
+    }
+    table.setAttribute("name","affRes");
+    return table;
 }

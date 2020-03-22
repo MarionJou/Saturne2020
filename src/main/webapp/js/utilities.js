@@ -135,14 +135,7 @@ create new select element and append it to an element
 ------------------------------------------------------------------ */
 function addSelect(currentElement, name, items, elementValue=-1) {
 	var selectElement = document.createElement("SELECT");
-	selectElement.setAttribute("name", name);*
-        var optionElement = document.createElement("OPTION");
-        optionElement.value = "0";
-        var textElement = document.createTextNode("-");
-        optionElement.appendChild(textElement);
-
-        selectElement.appendChild(optionElement);
-
+	selectElement.setAttribute("name", name);
 	for (var i=0; i < items.length; i++) {
 		var optionElement = document.createElement("OPTION");
 		var valueID = items[i].id;
@@ -260,6 +253,7 @@ function convertTextToSelect(currentElement, elementName, elementsOption, elemen
 		// Replace text by an select element
     	deleteAll(currentElement);
     	var theSelect = addSelect(currentElement, elementName, elementsOption, elementValue);
+        return theSelect;
     }
 }
 
@@ -280,7 +274,7 @@ function convertElementToText(currentElement) {
 		}
 		
     	if (currentSon !== null) {
-			// Get value according to tagName - SELECT, INPUT, ...
+			// Get value according to tagName - SELECT, INPUT, ..
     		var value = "";
     		if (currentSon.tagName === "SELECT") {
     			value = currentSon.options[currentSon.selectedIndex].textContent;

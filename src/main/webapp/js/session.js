@@ -15,7 +15,6 @@ function creerTest(ref){
             duree: document.getElementsByName("duree")[0].value,
             notationId: selNot.options[indexNot].value,
             groupeId: selGro.options[indexGro].value,
-
             quizId: selQui.options[indexQui].value
         },
         method: 'POST',
@@ -118,20 +117,35 @@ function allouerPoints(ref,n){
             var form = document.createElement("FORM");
             var bouton = document.createElement("BUTTON");
             bouton.textContent="Revenir au menu";
-            form.setAttribute("action","valider.do");
-            form.setAttribute("method","POST");
+            form.setAttribute("action","index.do");
+            form.setAttribute("method","GET");
             var hidden = document.createElement("INPUT");
-            hidden.setAttribute("name","id");
+            hidden.setAttribute("name","code");
             hidden.type="hidden";
-            hidden.value=document.getElementsByName("personneId")[0].value;
+            hidden.value=document.getElementsByName("code")[0].value;
             form.appendChild(hidden);
-
             form.appendChild(bouton);
             var h1 = document.createElement("H1");
             h1.textContent="Vous avez fini de créer votre session de test, pour revenir au menu appuyez sur le bouton ci dessous.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
             console.log("Youpi");
+//            var form = document.createElement("FORM");
+//            var bouton = document.createElement("BUTTON");
+//            bouton.textContent="Revenir au menu";
+//            form.setAttribute("action","valider.do");
+//            form.setAttribute("method","POST");
+//            var hidden = document.createElement("INPUT");
+//            hidden.setAttribute("name","id");
+//            hidden.type="hidden";
+//            hidden.value=document.getElementsByName("personneId")[0].value;
+//            form.appendChild(hidden);
+//            form.appendChild(bouton);
+//            var h1 = document.createElement("H1");
+//            
+//            divRef.appendChild(h1);
+//            divRef.appendChild(form);
+//            console.log("Youpi");
         },
         error: function(res,stat,err){
             console.log(res.responseText);

@@ -1,10 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 function afficherRep(ref){
     //alert("Ca marche!!!");
     var tdRef = getNextParentTag(ref,"TD");
@@ -26,7 +19,7 @@ function afficherRep(ref){
     
 }
 
-function ajoutterRep(ref,type){
+function ajouterRep(ref,type){
     if (type==1){
         var inputText = document.createElement("INPUT");
         inputText.setAttribute("type", "text");
@@ -51,7 +44,7 @@ function ajoutterRep(ref,type){
         td.appendChild(button);
         tr.appendChild(td);
         var insertedNode = tableRef.insertBefore(tr,trRef);
-        ref.setAttribute("onClick","ajoutterRep(this,1);");
+        ref.setAttribute("onClick","ajouterRep(this,1);");
     }else if (type==2){
         var inputText = document.createElement("INPUT");
         inputText.setAttribute("type", "text");
@@ -76,13 +69,12 @@ function ajoutterRep(ref,type){
         td.appendChild(button);
         tr.appendChild(td);
         var insertedNode = tableRef.insertBefore(tr, trRef);
-        ref.setAttribute("onClick","ajoutterRep(this,2);");
+        ref.setAttribute("onClick","ajouterRep(this,2);");
     }
     
 }
 
-
-function ajoutterMotCle(ref){
+function ajouterMotCle(ref){
     var inputText = document.createElement("INPUT");
     inputText.setAttribute("type", "text");
     inputText.setAttribute("name", "motCle");
@@ -103,9 +95,9 @@ function ajoutterMotCle(ref){
 }
 
 
-
 function valider(ref){
     var type = document.getElementsByName("type")[0].value; //Type de question
+    var persId = document.getElementsByName("personneId")[0].value;
     if (type=="1"){
         var listEnonce = document.getElementsByName("enonceRepUni"); //Liste des énoncés de réponse
         var listCorr = document.getElementsByName("correctesUni"); //Liste qui permet de sevoir quelles réponses sont correctes
@@ -145,15 +137,13 @@ function valider(ref){
         url:"creerQuesRep.do",
         data: {
             "type": type,
-            "personneId": document.getElementsByName("personneId")[0].value,
-
+            "personneId": persId,
             "question": JSON.stringify(question),
             "reponses": JSON.stringify(listRep),
             "motsCles": JSON.stringify(listMotsCles)
         },
         method: 'POST',
         success: function(result){
-
             var divRef = getNextParentTag(ref,"DIV");
             deleteAll(divRef);
             var form = document.createElement("FORM");
@@ -163,16 +153,15 @@ function valider(ref){
             form.setAttribute("method","POST");
             
             var hidden = document.createElement("INPUT");
-            hidden.setAttribute("name","id");
+            hidden.setAttribute("name","code");
             hidden.type="hidden";
-            hidden.value=document.getElementsByName("personneId")[0].value;
+            hidden.value=document.getElementsByName("code")[0].value;
             form.appendChild(hidden);
             form.appendChild(bouton);
             var h1 = document.createElement("H1");
-            h1.textContent="Vous avez fini de créer vvos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
+            h1.textContent="Vous avez fini de créer votre questions, pour revenir au menu appuyez sur le bouton ci dessous.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
-
         },
         error: function(res,stat,err){
             console.log(res.responseText);
@@ -195,9 +184,7 @@ function deleteRep(ref){
     ref.parentNode.removeChild(ref);
 }
 
-
 function validerModif(ref){
-
     var type = document.getElementsByName("type")[0].value; //Type de question
     if (type=="1"){
         var listEnonce = document.getElementsByName("enonceRepUni"); //Liste des énoncés de réponse
@@ -246,26 +233,23 @@ function validerModif(ref){
         method: 'POST',
         success: function(result){
             var divRef = getNextParentTag(ref,"DIV");
-            var personneId = document.getElementsByName("personneId")[0].value;
-            console.log(personneId);
             deleteAll(divRef);
             var form = document.createElement("FORM");
             var bouton = document.createElement("BUTTON");
             bouton.textContent="Revenir au menu";
-            form.setAttribute("action","versCreerQuest.do");
-            form.setAttribute("method","POST");
+            form.setAttribute("action","versCreerQues.do");
+            form.setAttribute("method","GET");
             
             var hidden = document.createElement("INPUT");
-            hidden.setAttribute("name","id");
+            hidden.setAttribute("name","code");
             hidden.type="hidden";
-            hidden.value=personneId;
+            hidden.value=document.getElementsByName("code")[0].value;
             form.appendChild(hidden);
             form.appendChild(bouton);
             var h1 = document.createElement("H1");
-            h1.textContent="Vous avez fini de créer vvos questions, pour revenir au menu appuyez sur le bouton ci dessous.";
+            h1.textContent="Vous avez fini de modifier votre question, pour revenir au menu de création appuyez sur le bouton ci dessous.";
             divRef.appendChild(h1);
             divRef.appendChild(form);
-
         },
         error: function(res,stat,err){
             console.log(res.responseText);
