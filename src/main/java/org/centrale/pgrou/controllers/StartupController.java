@@ -8,6 +8,7 @@ package org.centrale.pgrou.controllers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.centrale.ldap.LDAPManager;
 import org.centrale.ldap.LDAPUser;
@@ -27,37 +28,50 @@ import org.springframework.web.servlet.ModelAndView;
 public class StartupController {
     
     @Autowired
-    private ConnexionRepository connexionRepository;
-    
+    private ConnexionRepository connexionRepository;    
     @Autowired
-    private PersonneRepository personneRepository;
-    
+    private PersonneRepository personneRepository;    
     @Autowired
-    private RoleRepository roleRepository;
-    
+    private RoleRepository roleRepository;    
     @Autowired
-    private MenuRepository menuRepository;
-    
+    private MenuRepository menuRepository;    
     @Autowired
-    private GroupeRepository groupeRepository;
-    
+    private TestRepository testRepository;    
     @Autowired
-    private TestRepository testRepository;
-    
+    private GroupeRepository groupeRepository;    
     @Autowired
     private QuestionRepository questionRepository;
-    
+    @Autowired
+    private NotationRepository notationRepository;
     @Autowired
     private QuizRepository quizRepository;
     
-    @Autowired
-    private NotationRepository notationRepository;
-    
     @RequestMapping(value="index.do", method=RequestMethod.GET)
-    public ModelAndView handleGet(){
-        ApplicationInitializer.init(personneRepository, roleRepository, menuRepository);
+    public ModelAndView handleGet(HttpServletRequest request){
+        ModelAndView returned = new ModelAndView("index");
+        String code = request.getParameter("code");
+        if(code!=null){
+            Optional<Connexion> coResult = connexionRepository.findById(code);
+            if(coResult.isPresent()){
+                Connexion connexion = coResult.get();
+                Personne pers = connexion.getPersonneid();
+                Role admin = roleRepository.findOneById(1);
+                Role teacher = roleRepository.findOneById(2);
+                if(pers.getRoleCollection().contains(admin)||pers.getRoleCollection().contains(teacher)){
+                    returned = new ModelAndView("AccueilProfesseur");
+                } else {
+                    returned = new ModelAndView("AccueilEtudiant");
+                    String login = pers.getLogin();
+                    returned.addObject("listTests",testRepository.affichageProchainsTests(login));
+                }
+                Security.setDefaultData(returned, connexion);
+            }
+        } else {
+            ApplicationInitializer.init(personneRepository, roleRepository, menuRepository);
+            Security.check(connexionRepository);
+        }
         Security.check(connexionRepository);
-        return new ModelAndView("index");
+        return returned;
     }
     
     @RequestMapping(value="index.do", method=RequestMethod.POST)
@@ -66,7 +80,7 @@ public class StartupController {
         Security.check(connexionRepository);
         
         String login = request.getParameter("user");
-        String mdp = request.getParameter("passwd");
+        String mdp = request.getParameter("password");
         
         Boolean identifiantsCorrects = false;
         
@@ -83,13 +97,13 @@ public class StartupController {
                     person.setPrenom(ldapUser.getUserPrenom());
                     person.setLogin(login);
                     if (ldapUser.getUserAffiliation().equals("student")){
-                        Role role = roleRepository.findOneByLabel("student");
+                        Role role = roleRepository.findOneByLabel("Student");
                         Collection<Role> roleCollection = new ArrayList();
                         roleCollection.add(role);
                         person.setRoleCollection(roleCollection);
-//                        Collection<Personne> persCollection = new ArrayList();
-//                        persCollection.add(person);
-//                        role.setPersonneCollection(persCollection);
+                        Collection<Personne> persCollection = new ArrayList();
+                        persCollection.add(person);
+                        role.setPersonneCollection(persCollection);
                     }
                     personneRepository.save(person);
                 }
@@ -100,6 +114,7 @@ public class StartupController {
                 && (Security.validatePassword(mdp, person.getMotdepasse()))) {
                 identifiantsCorrects = true;
             }
+            //Règle 3 :l'administrateur doit être dans la base de données
             else if((person == null)
                 && (login.equals(ApplicationInitializer.TRAPLOGIN)) 
                 && (mdp.equals(ApplicationInitializer.TRAPPASS))) {
@@ -113,23 +128,12 @@ public class StartupController {
                 
                 Role admin = roleRepository.findOneById(1);
                 Role teacher = roleRepository.findOneById(2);
-                Role student = roleRepository.findOneById(3);
                 if (person != null && person.getRoleCollection() != null){
-                    int cpt = person.getRoleCollection().size();
-                    if(cpt == 1){
-                        if(person.getRoleCollection().contains(admin) || person.getRoleCollection().contains(teacher)){
-                            returned = new ModelAndView("enjoy2");
-                            returned.addObject("listCo",connexionRepository.findAll());
-                            returned.addObject("listPers",personneRepository.findAll());
-                        } else {
-                            String nom = person.getNom();
-                            String prenom = person.getPrenom();
-                            int id = person.getPersonneid();
-                            returned = new ModelAndView("menuProf");
-                            returned.addObject("prenom", prenom);
-                            returned.addObject("nom", nom);
-                            returned.addObject("personneId", id);
-                        }
+                    if(person.getRoleCollection().contains(admin) || person.getRoleCollection().contains(teacher)){
+                        returned = new ModelAndView("AccueilProfesseur");
+                    } else {
+                        returned = new ModelAndView("AccueilEtudiant");
+                        returned.addObject("listTests",testRepository.affichageProchainsTests(login));
                     }
                 }
                 Security.setDefaultData(returned, connexion);
@@ -139,57 +143,87 @@ public class StartupController {
         return returned;
     }
 
+
     
-    //versAffRes.do
+    /**
+     * Fonction qui redirige vers la page des résultats 
+     * @param request: on récupère l'id de la personne pour avoir la liste des tests qu'il a fait
+     * @return 
+     */
     @RequestMapping(value="versAffRes.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersAffTest(HttpServletRequest request){
         Security.check(connexionRepository);
-        String idStr = request.getParameter("id");
-        int id = Integer.parseInt(idStr);
-        ModelAndView returned = new ModelAndView();
-        List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Test> listTest = testRepository.findWithPersonne(id); //Mettre id 
-        returned = new ModelAndView("affResultat");
-        returned.addObject("listGroupe",listGroupe);
-        returned.addObject("listTest",listTest);
-        returned.addObject("personneId",id);
+        ModelAndView returned = new ModelAndView("affResultat");
+        String code = request.getParameter("code");
+        if(code!=null){
+            Optional<Connexion> coResult = connexionRepository.findById(code);
+            if(coResult.isPresent()){
+                Connexion connexion = coResult.get();
+                Personne pers = connexion.getPersonneid();
+                int id = pers.getPersonneid();
+                List<Groupe> listGroupe = groupeRepository.findAll();
+                List<Test> listTest = testRepository.findWithPersonne(id); 
+                Security.setDefaultData(returned, connexion);
+                returned.addObject("listGroupe",listGroupe);
+                returned.addObject("listTest",listTest);
+                returned.addObject("personneId",id);
+            }
+        }    
         return returned;
     }
     
-    //versCreerQuest.do
+    /**
+     * Fonction qui envoie vers la liste des questions déjà créées
+     * @param request: on récupère l'id de la personne pour pouvoir lui associer ses questions
+     * @return 
+     */
     @RequestMapping(value="versCreerQuest.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersCreerQuest(HttpServletRequest request){
-        Security.check(connexionRepository);
-        String idStr = request.getParameter("id");
-        int id = Integer.parseInt(idStr);
-        ModelAndView returned = new ModelAndView();
-        List<Question> listQuestion = questionRepository.findWithPersonne(id);
-        returned = new ModelAndView("question");
-        returned.addObject("listQuestion",listQuestion);
-        returned.addObject("personneId",id);
+        
+        ModelAndView returned = new ModelAndView("question");
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if(coResult.isPresent()){
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer persId = connexion.getPersonneid().getPersonneid();
+            Collection<Question> listQuestion = questionRepository.findWithPersonne(persId);
+            returned.addObject("listQuestion", listQuestion);
+        }
         return returned;
     }
     
-    
-    @RequestMapping(value="versCreerTest.do", method=RequestMethod.POST)
-    public ModelAndView envoyerVersCreerTest(HttpServletRequest request){
-        Security.check(connexionRepository);
-        String idStr = request.getParameter("id");
-        int id = Integer.parseInt(idStr);
-        ModelAndView returned = new ModelAndView();
-        List<Notation> listNotation = notationRepository.findAll();
-        List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Quiz> listQuiz = quizRepository.findWithPersonne(id);
-        List<Test> listTest = testRepository.findWithPersonne(id);
-        returned = new ModelAndView("session");
-        returned.addObject("listNotations", listNotation);
-        returned.addObject("listGroupes", listGroupe);
-        returned.addObject("listQuizs",listQuiz);
-        returned.addObject("listTests",listTest);
-        returned.addObject("personneId",id);
+    /**
+     * Fonction qui envoie vers la page de création de test
+     * @param request: id de la personne
+     * @return 
+     */
+    @RequestMapping(value="versCreerTest.do",method=RequestMethod.GET)
+    public ModelAndView envoyerVersCreerTest(HttpServletRequest request) {
+        ModelAndView returned = new ModelAndView("session");
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if(coResult.isPresent()){
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Personne pers = connexion.getPersonneid();
+            List<Notation> listNotation = notationRepository.findAll();
+            List<Groupe> listGroupe = groupeRepository.findAll();
+            List<Quiz> listQuiz = quizRepository.findWithPersonne(pers.getPersonneid());
+            List<Test> listTest = testRepository.findWithPersonne(pers.getPersonneid());
+            returned.addObject("listNotations", listNotation);
+            returned.addObject("listGroupes", listGroupe);
+            returned.addObject("listQuizs",listQuiz);
+            returned.addObject("listTests",listTest);
+        }
         return returned;
     }
     
+    /**
+     * Fonction qui renvoie sur un faux menu de prof où toutes les fonctions sont disponibles
+     * @param request: pour l'id de la personne
+     * @return 
+     */
     @RequestMapping(value="versMenuProf.do", method=RequestMethod.POST)
     public ModelAndView envoyerVersMenuProf(HttpServletRequest request){
         Security.check(connexionRepository);
@@ -205,14 +239,18 @@ public class StartupController {
         return returned;
     }
     
-    
+    /**
+     * Fonction qui envoie vers la liste des tests disponibles
+     * @param request: id de la personne
+     * @return 
+     */
     @RequestMapping(value="versListTest.do", method=RequestMethod.POST)
     public ModelAndView envoyerListTest(HttpServletRequest request){
         Security.check(connexionRepository);
         String idStr = request.getParameter("id");
         int id = Integer.parseInt(idStr);
         ModelAndView returned = new ModelAndView();
-        List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),1); //Mettre id
+        List<Test> listTest = testRepository.findWithParameters(new java.util.Date(),id); //Mettre id <!>
         List<TestAff> listTestAff = new ArrayList();
         String format = "HH:mm";
         java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
@@ -226,6 +264,26 @@ public class StartupController {
         returned = new ModelAndView("affTest");
         returned.addObject("listTests",listTestAff);
         returned.addObject("personneId",id);
+        return returned;
+    }
+    
+    /**
+     * Fonction qui renvoie sur un faux menu d'élève où toutes les fonctions sont disponibles
+     * @param request: pour l'id de la personne
+     * @return 
+     */
+    @RequestMapping(value="versMenuEleve.do", method=RequestMethod.POST)
+    public ModelAndView envoyerVersMenuEleve(HttpServletRequest request){
+        Security.check(connexionRepository);
+//        String idStr = request.getParameter("id");
+//        int id = Integer.parseInt(idStr);
+//        Personne person = personneRepository.findById(id).get();
+//        String nom = person.getNom();
+//        String prenom = person.getPrenom();
+        ModelAndView returned = new ModelAndView("AccueilEtudiant");
+//        returned.addObject("prenom", prenom);
+//        returned.addObject("nom", nom);
+//        returned.addObject("personneId", id);
         return returned;
     }
 }

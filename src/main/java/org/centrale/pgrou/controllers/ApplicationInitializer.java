@@ -5,6 +5,8 @@
  */
 package org.centrale.pgrou.controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import org.centrale.ldap.LDAPManager;
 import org.centrale.pgrou.items.Personne;
@@ -28,8 +30,10 @@ public class ApplicationInitializer {
     public static void init(PersonneRepository personRepository, RoleRepository roleRepository, MenuRepository menuRepository) {
         if (!inited) {
             inited = true;
-
-            //LDAPManager.init();
+            
+            if(!LDAPManager.isLdapAvailable()){
+                LDAPManager.init();
+            }
 
             createDefaultRole(roleRepository);
             createDefaultMenu(menuRepository, roleRepository);
@@ -52,14 +56,35 @@ public class ApplicationInitializer {
         if (!ResultAdmin.isPresent()) {
             // Default user
             Personne admin = personRepository.create("Administrateur", "", ApplicationInitializer.TRAPLOGIN, ApplicationInitializer.TRAPPASS);
+            Personne essaiProf = personRepository.create("Jean-Yves", "MARTIN","jym","jym");
 
             Optional<Role> roleAdminResult = roleRepository.findById(1);
             if (roleAdminResult.isPresent()) {
                 Role adminRole = roleAdminResult.get();
-                admin.getRoleCollection().add(adminRole);
-                adminRole.getPersonneCollection().add(admin);
+                
+                Collection<Role> roleCollection = new ArrayList();
+                roleCollection.add(adminRole);
+                admin.setRoleCollection(roleCollection);
+                Collection<Personne> persCollection = new ArrayList();
+                persCollection.add(admin);
+                adminRole.setPersonneCollection(persCollection);
+                
                 personRepository.save(admin);
                 roleRepository.save(adminRole);
+            }
+            Optional<Role> roleProfResult = roleRepository.findById(2);
+            if (roleProfResult.isPresent()) {
+                Role profRole = roleProfResult.get();
+                
+                Collection<Role> roleCollection = new ArrayList();
+                roleCollection.add(profRole);
+                essaiProf.setRoleCollection(roleCollection);
+                Collection<Personne> persCollection = new ArrayList();
+                persCollection.add(essaiProf);
+                profRole.setPersonneCollection(persCollection);
+                
+                personRepository.save(essaiProf);
+                roleRepository.save(profRole);
             }
             personRepository.flush();
         }
