@@ -1,21 +1,17 @@
-<%-- 
-    Document   : modifQuest
-    Created on : 2 mars 2020, 13:00:34
-    Author     : Mario
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>Créer une question </title>
+        <title>Créer un quiz </title>
         <meta charset="UTF-8"/> 
         <link href="css/main.css" rel="stylesheet" type="text/css" />
-        <script type="text/javascript" src="js/questionRep.js"></script>
+        <script type="text/javascript" src="js/quiz.js" ></script>
+        <script type="text/javascript" src="js/questionRep.js" ></script>
         <script type="text/javascript" src="js/utilities.js"></script>
         <script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+        
     </head>
     <body>
         <header>
@@ -58,92 +54,71 @@
             </nav>
             </br>
         </header>
-        <div id="total" class="box">
-            <h1> Modifier une question </h1>
+        <div id="centre" class="box">
+            <h1> Créer une question </h1>
             <table>
+                <tr>
+                    <td>Type:</td>
+                    <td><select name="type" onChange="afficherRep(this);">
+                            <option value="0">-</option>
+                            <option value="1">Qcm a réponse unique</option>
+                            <option value="2">Qcm normal</option>
+                        </select>
+                    </td>
+                </tr>
                 <tr> 
                     <td>Question :</td>
-                    <td><input name="enonceQues" type="text" value="${question.enonce}"/>
-                        <input name="idQues" type="hidden" value="${question.questionid}"/>
-                        <input name="type" type="hidden" value="${typeQues}"/></td>
+                    <td><input name="enonceQues" type="text" value="Entrez l'énonce ici"/></td>
+                    
                 </tr>
                 <tr>
                     <td>La question est elle privée ? </td>
                     <td>
-                        <input type="radio" name="estPrivee" value=true checked="${question.estprivee}">
+                        <input type="radio" name="estPrivee" value=true checked>
                         <label for="yes">Oui</label>
-                        <input type="radio" name="estPrivee" value=false checked="${!question.estprivee}">
+                        <input type="radio" name="estPrivee" value=false>
                         <label for="no">Non</label>
                     </td>
                 </tr>
                 <tr>
                     <td>Réponses:</td>
-                    <td></td>
+                    <td name="QcmRepUni" style="display:none">
+                        <input name="enonceRepUni" type="text" value="Entrez l'énoncé ici"/>
+                        <input type="radio" name="correctesUni" value=true>
+                        <button onclick="deleteRep(this);">X</button>
+                    </td>
+                    <td name="QcmRepMulti" style="display:none">
+                        <input name="enonceRepMulti" type="text" value="Entrez l'énoncé ici"/>
+                        <input type="checkbox" name="correctesMulti" value=true>
+                        <button onclick="deleteRep(this);">X</button>
+                    </td>
                 </tr>
-                <c:forEach var="qcmrep" items="${listReponses}">
-                    <tr><td></td>
-                        <td>
-                        <c:if test="${type.repunique}">
-                                <input name="idRepUni" type="hidden" value="${qcmrep.qcmrepid}"/>
-                                <input name="enonceRepUni" type="text" value="${qcmrep.enonce}"/>
-                                <c:choose>
-                                    <c:when test="${qcmrep.reponseid.correcte}">
-                                        <input type="radio" name="correctesUni" value=true checked>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <input type="radio" name="correctesUni" value=true>
-                                    </c:otherwise>
-                                </c:choose>
-                                <button onclick="deleteRep(this);">X</button>
-                        </c:if>
-                        <c:if test="${!type.repunique}">
-                                <input name="idRepMulti" type="hidden" value="${qcmrep.qcmrepid}"/>
-                                <input name="enonceRepMulti" type="text" value="${qcmrep.enonce}"/>
-                                <c:choose>
-                                    <c:when test="${qcmrep.reponseid.correcte}">
-                                        <input type="checkbox" name="correctesMulti" value=true checked>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <input type="checkbox" name="correctesMulti" value=true>
-                                    </c:otherwise>
-                                </c:choose>
-                                <button onclick="deleteRep(this);">X</button>
-                        </c:if>
-                        </td>
-                    </tr>
-                </c:forEach>
                 <tr>
                     <td></td>
-                    <c:if test="${type.repunique}">
-                    <td name="QcmRepUni" >
+                    <td name="QcmRepUni" style="display:none">
                         <button onclick="ajouterRep(this,1);">Ajouter une réponse</button>
                     </td>
-                    </c:if>
-                    <c:if test="${!type.repunique}">
-                    <td name="QcmRepMulti">
+                    <td name="QcmRepMulti" style="display:none">
                         <button onclick="ajouterRep(this,2);">Ajouter une réponse</button>
                     </td>
-                    </c:if>
                 </tr>
                 <tr>
                     <td>Mots-clés:</td>
                     <td>
-                        <c:forEach var="motCle" items="${listMotsCles}">
-                            <input name="motCle" type="text" value="${motCle.mot}"/>
-                            <button onclick="deleteMotCle(this);">X</button>
-                        </c:forEach>
+                        <input name="motCle" type="text" />
+                        <button onclick="deleteMotCle(this);">X</button>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
-                        <button onclick="ajouterMotCle(this);">Ajouter un mot clé</button>
+                        <button onclick="ajoutterMotCle(this);">Ajouter un mot clé</button>
                     </td>
                 </tr>
             </table>
-            <input type="hidden" name="code" value="${code}">
-            <button onClick="validerModif(this);">Valider les modifications</button>
+
+            <button onClick="ajouterQuestion(this);">Créer les réponses</button>
+
         </div>
     </body>
 </html>
-

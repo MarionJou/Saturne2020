@@ -1,9 +1,3 @@
-<%-- 
-    Document   : questRep
-    Created on : 29 févr. 2020, 17:36:13
-    Author     : Marion PGROU
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -12,19 +6,56 @@
     <head>
         <title>Créer une question </title>
         <meta charset="UTF-8"/> 
-        <link href="css/question.css" rel="stylesheet" type="text/css" />
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="js/questionRep.js"></script>
         <script type="text/javascript" src="js/utilities.js"></script>
         <script type="text/javascript" src="js/jquery-3.4.1.js"></script>
     </head>
     <body>
-        <header> </header>
+        <input type="hidden" name="code" value="${code}">
+        <header>
+            </br>
+            <a href="https://www.ec-nantes.fr/version-francaise/">
+                <img src="img/LogoCN_Blanc.png" style="height: 75px; position: absolute; top: 10px; left: 10px;" alt="LogoCN">
+            </a>
+            <form action="index.do" method="GET">
+                <input type="hidden" name="code" value="${code}">
+                <h2><img src="img/s2.jpg" style="height: 35px;"  alt="Saturne">  
+                    <input type="submit" class="titre" value="Saturne"></h2>
+            </form>
+            <nav>
+                <ul>
+                    <li class="deroulant"><a href="#" class="nom">${nom} ${prenom} &ensp;</a>
+                        <ul class="sous">
+                            <form action="versCreerQues.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer une question"></li>
+                            </form>
+                            <form action="versCreerQuiz.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer un quiz"></li>
+                            </form>
+                            <form action="versCreerTest.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer une session d'évaluation"></li>
+                            </form>
+                            <form action="#" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Paramètres"></li>
+                            </form>
+                            <form action="disconnect.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Déconnexion"></li>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            </br>
+        </header>
         <div id="gauche" class="box"> 
-            <h1> Liste des questions déjà crées </h1>
-
-            <input type="hidden" name="personneId" value="${personneId}"/>
-
-            <table>
+            <h1> Liste des questions déjà créées </h1>
+            <table class="liste">
                 <tr> 
                     <th> Enoncé </th>
                     <th> Date de création de la question </th>
@@ -32,25 +63,21 @@
                 </tr>
                 <c:forEach var="question" items="${listQuestion}">
                     <tr>
-                        <th>${question.enonce}</th>
-                        <th>${question.datecreationquestion}</th>
-                        <th>${question.estprivee}</th>
-                        <th>
+                        <td>${question.enonce}</td>
+                        <td>${question.datecreationquestion}</td>
+                        <td>${question.estprivee}</td>
+                        <td>
                             <form action="deleteQuestion.do" method="POST">
+                                <input type ="hidden" name="code" value="${code}" />
                                 <input type ="hidden" name="id" value="${question.questionid}" />
-
-                                <input type="hidden" value="${personneId}" name="personneId" />
-
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
                             <form action="modifQuestion.do" method="POST">
+                                <input type ="hidden" name="code" value="${code}" />
                                 <input type ="hidden" name="id" value="${question.questionid}" />
-
-                                <input type="hidden" value="${personneId}" name="personneId" />
-
-                                <button><img src="img/edit.png" alt="delete" height="20" /></button>
+                                <button><img src="img/edit.png" alt="edit" height="20" /></button>
                             </form>
-                        </th>
+                        </td>
                     </tr>                    
                 </c:forEach>
             </table>
@@ -59,7 +86,7 @@
             <h1> Créer une question </h1>
             <table>
                 <tr>
-                    <td>Type:</td>
+                    <td>Type :</td>
                     <td><select name="type" onChange="afficherRep(this);">
                             <option value="0">-</option>
                             <option value="1">Qcm a réponse unique</option>
@@ -75,14 +102,14 @@
                 <tr>
                     <td>La question est elle privée ? </td>
                     <td>
-                        <input type="radio" name="estPrivee" value=true checked>
+                        <input type="radio" name="estPrivee" value=true checked style="inline">
                         <label for="yes">Oui</label>
-                        <input type="radio" name="estPrivee" value=false>
+                        <input type="radio" name="estPrivee" value=false style="inline">
                         <label for="no">Non</label>
                     </td>
                 </tr>
                 <tr>
-                    <td>Réponses:</td>
+                    <td>Réponses :</td>
                     <td name="QcmRepUni" style="display:none">
                         <input name="enonceRepUni" type="text" value="Entrez l'énoncé ici"/>
                         <input type="radio" name="correctesUni" value=true>
@@ -97,14 +124,14 @@
                 <tr>
                     <td></td>
                     <td name="QcmRepUni" style="display:none">
-                        <button onclick="ajoutterRep(this,1);">Ajouter une réponse</button>
+                        <button onclick="ajouterRep(this,1);">Ajouter une réponse</button>
                     </td>
                     <td name="QcmRepMulti" style="display:none">
-                        <button onclick="ajoutterRep(this,2);">Ajouter une réponse</button>
+                        <button onclick="ajouterRep(this,2);">Ajouter une réponse</button>
                     </td>
                 </tr>
                 <tr>
-                    <td>Mots-clés:</td>
+                    <td>Mots-clés :</td>
                     <td>
                         <input name="motCle" type="text" />
                         <button onclick="deleteMotCle(this);">X</button>
@@ -113,16 +140,12 @@
                 <tr>
                     <td></td>
                     <td>
-                        <button onclick="ajoutterMotCle(this);">Ajouter un mot clé</button>
+                        <button onclick="ajouterMotCle(this);">Ajouter un mot clé</button>
                     </td>
                 </tr>
             </table>
-
-            <button onClick="valider(this);">Créer les réponses</button>
-
+            <input type="hidden" name="personneId" value="${persId}">
+            <button onClick="valider(this);">Créer la question</button>
         </div>
-        <div id="droite" class="box"> 
-        </div>
-        <footer> Mdr j'ai repris ton truc Marion </footer>
     </body>
 </html>

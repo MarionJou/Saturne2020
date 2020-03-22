@@ -11,20 +11,43 @@
     <head>
         <title>Liste des tests</title>
         <meta charset="UTF-8"/> 
-        <link href="css/repondre.css" rel="stylesheet" type="text/css" />
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="js/evaluation.js"></script>
         <script type="text/javascript" src="js/session.js"></script>
         <script type="text/javascript" src="js/jquery-3.4.1.js"></script>
     </head>
     <body>
-        <header> </header>
-        <div id="gauche" class="box"> <p id="compte_a_rebours"> </p>
+        <header>
+            </br>
+            <a href="https://www.ec-nantes.fr/version-francaise/">
+                <img src="img/LogoCN_Blanc.png" style="height: 75px; position: absolute; top: 10px; left: 10px;" alt="LogoCN">
+            </a>
+            <form action="index.do" method="GET">
+                <input type="hidden" name="code" value="${code}">
+                <h2><img src="img/s2.jpg" style="height: 35px;"  alt="Saturne">  
+                    <input type="submit" class="titre" value="Saturne"></h2>
+            </form>
+            <nav>
+                <ul>
+                    <li class="deroulant"><a href="#">${nom} ${prenom} &ensp;</a>
+                        <ul class="sous">
+                            <li><a href="#">Historique des auto-évaluations</a></li>
+                            <li><a href="#">Paramètres</a></li>
+                            <form action="disconnect.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Déconnexion"></li>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            </br>
+        </header>
+        <div id="gauche" class="compteARebours"> <p id="compte_a_rebours"> </p>
             <script type="text/javascript">
 
-
-            var diff =50;
-
-            var date_evenement = new Date((new Date()).getTime() + diff*1000);
+            var diff = ${test.dureeInt};
+            var date_evenement = new Date(${currentDate} + diff*1000);
 
             function compte_a_rebours()
 
@@ -94,9 +117,7 @@
 
                 else
                 {
-
-                    finTest(this,${nombre},${personneId});
-
+                    finTest(this,${nombre},"${code}");
                     console.log("miaou");
                 }
 
@@ -110,15 +131,15 @@
             </script>
         </div>
         <div id="centre" class="box">
-            <h1 style="text-align: center;">${test.nomQuiz}</h1>
+            <h2 style="text-align: center;">${test.nomQuiz}</h2>
             <form action="envRep.do" method="POST">
                 <input type="hidden" value="${nombre}" name="nombre"/>
+                <input type="hidden" name="code" value="${code}">
                 <input type="hidden" value="${test.testId}" name="testId"/>
-                <input type="hidden" value="${personneId}" name="personneId"/>
-
+                <input type="hidden" value="${currentDate}" name="currentDate"/>
                 <c:forEach var="question" items="${quesRep}">
                     <c:choose>
-                        <c:when test= "${question.idQues%2==0}">
+                        <c:when test= "${question.ordre%2==0}">
                             <table id="noir">
                         </c:when>
                         <c:otherwise>
@@ -149,9 +170,6 @@
                 </c:forEach> 
                 <button type="submit">Valider</button>
             </form>
-        </div>
-        <div id="droite" class="box"> 
-
         </div>
     </body>
 </html>

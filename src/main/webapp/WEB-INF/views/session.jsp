@@ -3,15 +3,53 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
+        <head>
         <title>Créer une session de test</title>
         <meta charset="UTF-8"/> 
-        <link href="css/session.css" rel="stylesheet" type="text/css" />
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="js/session.js"></script>
         <script type="text/javascript" src="js/jquery-3.4.1.js"></script>
     </head>
     <body>
-        <header> </header>
+        <header>
+            </br>
+            <a href="https://www.ec-nantes.fr/version-francaise/">
+                <img src="img/LogoCN_Blanc.png" style="height: 75px; position: absolute; top: 10px; left: 10px;" alt="LogoCN">
+            </a>
+            <form action="index.do" method="GET">
+                <input type="hidden" name="code" value="${code}">
+                <h2><img src="img/s2.jpg" style="height: 35px;"  alt="Saturne">  
+                    <input type="submit" class="titre" value="Saturne"></h2>
+            </form>
+            <nav>
+                <ul>
+                    <li class="deroulant"><a href="#" class="nom">${nom} ${prenom} &ensp;</a>
+                        <ul class="sous">
+                            <form action="versCreerQues.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer une question"></li>
+                            </form>
+                            <form action="#" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer un quiz"></li>
+                            </form>
+                            <form action="versCreerTest.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer une session d'évaluation"></li>
+                            </form>
+                            <form action="#" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Paramètres"></li>
+                            </form>
+                            <form action="disconnect.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Déconnexion"></li>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </header>
         <div id="gauche" class="box"> 
             <h1> Liste des sessions déjà crées </h1>
             <table>
@@ -28,8 +66,7 @@
                         <th>
                             <form action="delete.do" method="POST">
                                 <input type ="hidden" name="id" value="${test.testid}" />
-                                <input type ="hidden" name="personneId" value="${personneId}" />
-
+                                <input type="hidden" name="code" value="${code}">
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
                         </th>
@@ -84,14 +121,5 @@
             </table>
             <button onClick="creerTest(this);">Continuer et choisir le nombre de points par question</button>
         </div>
-        <div id="droite" class="box"> 
-            <input type="hidden" name="personneId" value="${personneId}"/>
-            <form action="versMenuProf.do" method="POST">
-                <input type="hidden" name="id" value="${personneId}"/>
-                <button>Revenir au menu principal</button>
-            </form>
-
-        </div>
-        <footer> Coucou </footer>
     </body>
 </html>

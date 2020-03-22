@@ -6,18 +6,54 @@
     <head>
         <title>Créer une question </title>
         <meta charset="UTF-8"/> 
-        <link href="css/question.css" rel="stylesheet" type="text/css" />
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="js/questionRep.js"></script>
         <script type="text/javascript" src="js/jquery-3.4.1.js"></script>
     </head>
     <body>
-        <header> </header>
-        <div id="gauche" class="box"> 
-            
-        </div>
-        <div id="centre" class="box">
+        <header>
+            </br>
+            <a href="https://www.ec-nantes.fr/version-francaise/">
+                <img src="img/LogoCN_Blanc.png" style="height: 75px; position: absolute; top: 10px; left: 10px;" alt="LogoCN">
+            </a>
+            <form action="index.do" method="GET">
+                <input type="hidden" name="code" value="${code}">
+                <h2><img src="img/s2.jpg" style="height: 35px;"  alt="Saturne">  
+                    <input type="submit" class="titre" value="Saturne"></h2>
+            </form>
+            <nav>
+                <ul>
+                    <li class="deroulant"><a href="#" class="nom">${nom} ${prenom} &ensp;</a>
+                        <ul class="sous">
+                            <form action="versCreerQues.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer une question"></li>
+                            </form>
+                            <form action="versCreerQuiz.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer un quiz"></li>
+                            </form>
+                            <form action="versCreerTest.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Créer une session d'évaluation"></li>
+                            </form>
+                            <form action="#" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Paramètres"></li>
+                            </form>
+                            <form action="disconnect.do" method="GET">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Déconnexion"></li>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            </br>
+        </header>
+        <div id="total" class="box">
             <h1> Liste des questions déjà crées </h1>
-            <table>
+            <table class="liste">
                 <tr> 
                     <th> Enoncé </th>
                     <th> Date de création de la question </th>
@@ -25,40 +61,28 @@
                 </tr>
                 <c:forEach var="question" items="${listQuestion}">
                     <tr>
-                        <th>${question.enonce}</th>
-                        <th>${question.datecreationquestion}</th>
-                        <th>${question.estprivee}</th>
-                        <th>
+                        <td>${question.enonce}</td>
+                        <td>${question.datecreationquestion}</td>
+                        <td>${question.estprivee}</td>
+                        <td>
                             <form action="deleteQuestion.do" method="POST">
+                                <input type ="hidden" name="code" value="${code}" />
                                 <input type ="hidden" name="id" value="${question.questionid}" />
-                                <input type="hidden" value="${personneId}" name="personneId" />
-
                                 <button><img src="img/delete.png" alt="delete" height="20" /></button>
                             </form>
                             <form action="modifQuestion.do" method="POST">
+                                <input type ="hidden" name="code" value="${code}" />
                                 <input type ="hidden" name="id" value="${question.questionid}" />
-
-                                <input type="hidden" value="${personneId}" name="personneId" />
-
                                 <button><img src="img/edit.png" alt="delete" height="20" /></button>
                             </form>
-                        </th>
-                    </tr>                    
+                        </td>
+                    </tr>                   
                 </c:forEach>
             </table>
-
-            <form action="ecranCreation.do" method="POST">
-                <input type="hidden" name="personneId" value="${personneId}"/>
-                <button>Créer une question</button>
+            <form action="versCreerQues.do" method="GET">
+                <input type="hidden" name="code" value="${code}">
+                <input type="submit" value="Créer une question">
             </form>
         </div>
-        <div id="droite" class="box"> 
-            <form action="versMenuProf.do" method="POST">
-                <input type="hidden" name="id" value="${personneId}"/>
-                <button>Revenir au menu principal</button>
-            </form>
-
-        </div>
-        <footer> Mdr j'ai repris ton truc Marion </footer>
     </body>
 </html>
