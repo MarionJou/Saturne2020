@@ -22,10 +22,19 @@ import org.springframework.stereotype.Repository;
 public interface MotcleRepository extends JpaRepository<Motcle,Integer>{
     @Query(value="SELECT m FROM Motcle m WHERE m.mot = :mot")
     Optional<Motcle> findWithParameter(@Param("mot")String mot);
+    
     @Query(value="DELETE FROM motclequestion WHERE \n" +
         "questionid =?1 RETURNING *;",nativeQuery=true)
     List<Motcle> deleteWithParameter(int id);
+    
     @Query(value="SELECT * FROM motcle INNER JOIN motclequestion USING(motcleid) WHERE \n" +
         "questionid =?1;",nativeQuery=true)
     List<Motcle> findWithIdQues(int id);
+    
+    @Query(value="SELECT * FROM motcle WHERE UPPER(mot) LIKE UPPER(CONCAT('%',?1, '%'));",nativeQuery=true)
+    List<Motcle> findWithMot(String mot);
+    
+    @Query(value="SELECT COUNT(question.questionid) FROM motclequestion INNER JOIN question USING (questionid) \n" +
+"WHERE estprivee= False AND motcleid =?1;",nativeQuery=true)
+    int findNombreWithId(int id);
 }

@@ -28,4 +28,7 @@ public interface ContenuquizRepository extends JpaRepository<Contenuquiz,Integer
     "evaluationid=?1);",nativeQuery=true)
     public List<Contenuquiz> findWithIdEval(int idEval);
     
+    @Query(value="SELECT * FROM contenuquiz "
+            + "WHERE quizid=?1",nativeQuery=true)
+    public List<Contenuquiz> findWithQuizId(int quizId);
 }
