@@ -32,9 +32,46 @@ public class TestCustomRepositoryImpl implements TestCustomRepository {
             List<String> testText = new ArrayList();
             testText.add(t.getTestid().toString());
             testText.add(testRepository.getNomTest(t.getTestid()));
-            testText.add(Utilities.asTimestamp(t.getDatedebuttest()));
-            testText.add(Utilities.asTimestamp(t.getDatefintest()));
-            testText.add(Utilities.getDate(t.getDureemaxtest(),"hh:mm:ss"));
+            String formatDate = "YYYY-MM-dd HH:mm:SS";
+            java.text.SimpleDateFormat formaterDate = new java.text.SimpleDateFormat( formatDate );
+            testText.add(formaterDate.format(t.getDatedebuttest()));
+            testText.add(formaterDate.format(t.getDatefintest()));
+            String formatTemps = "HH:mm";
+            java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( formatTemps );
+            String dureeStr = formater.format(t.getDureemaxtest());
+            testText.add(dureeStr);
+            returned.add(testText);
+        }
+        return returned;
+    }
+    
+   @Override
+    public List<List<String>> affichagePrecedentsTests(int persId) {
+        List<List<String>> returned = new ArrayList();
+        
+        Collection<Test> listTest = testRepository.getPreviousTestsById(persId, Utilities.getCurrentDate());
+        for(Test t:listTest){
+            List<String> testText = new ArrayList();
+            testText.add(t.getTestid().toString());
+            testText.add(testRepository.getNomTest(t.getTestid()));
+            String formatDate = "YYYY-MM-dd HH:mm:SS";
+            java.text.SimpleDateFormat formaterDate = new java.text.SimpleDateFormat( formatDate );
+            testText.add(formaterDate.format(t.getDatedebuttest()));
+            testText.add(formaterDate.format(t.getDatefintest()));
+            String formatTemps = "HH:mm";
+            java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( formatTemps );
+            String dureeStr = formater.format(t.getDureemaxtest());
+            testText.add(dureeStr);
+            if(t.getResultatvisible()!=null){
+                if(t.getResultatvisible()){
+                    testText.add("visible");
+                }else{
+                    testText.add("pasVisible");
+                }
+            }else{
+                testText.add("pasVisible");
+            }
+                
             returned.add(testText);
         }
         return returned;

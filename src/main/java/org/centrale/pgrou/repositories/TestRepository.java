@@ -34,6 +34,10 @@ public interface TestRepository extends JpaRepository<Test,Integer>, TestCustomR
             + "AND (Test.datedebuttest <= ?2 AND Test.datefintest > ?2) AND testid NOT IN (SELECT testid FROM evaluation)", nativeQuery=true)
     public Collection<Test> getNextTestsByLogin(String loginPers, Date date);
     
+    @Query(value="SELECT test.* FROM test INNER JOIN quiz USING (quizid)\n" +
+            "WHERE personneid=?1 AND datefintest< ?2;",nativeQuery=true)
+    public Collection<Test> getPreviousTestsById(int persId, Date date);
+    
     @Query(value="SELECT nomquiz FROM Quiz "
             + "INNER JOIN Test USING (quizid) "
             + "WHERE Test.testid = ?1", nativeQuery=true)

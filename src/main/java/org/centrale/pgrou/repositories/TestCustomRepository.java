@@ -19,5 +19,12 @@ public interface TestCustomRepository {
      * @return 
      */
     public List<List<String>> affichageProchainsTests(String loginPers);
+    
+    /**
+     * Renvoie la liste des tests finis
+     * @param persId
+     * @return 
+     */
+    public List<List<String>> affichagePrecedentsTests(int persId);
 
 }

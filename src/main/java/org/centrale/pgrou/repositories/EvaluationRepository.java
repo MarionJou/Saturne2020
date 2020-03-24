@@ -26,6 +26,9 @@ public interface EvaluationRepository extends JpaRepository<Evaluation,Integer>{
     @Query(value="SELECT * FROM evaluation WHERE personneid=?1;", nativeQuery=true)
     public List<Evaluation> findWithPers(int persid);
     
+    @Query(value="SELECT * FROM evaluation INNER JOIN test USING(testid) WHERE personneid=?1 AND resultatvisible=true;", nativeQuery=true)
+    public List<Evaluation> findEvalTermineeWithPers(int persid);
+    
     @Query(value="SELECT * FROM evaluation WHERE testid=?1;", nativeQuery=true)
     public List<Evaluation> findWithTest(int testid);
 }
