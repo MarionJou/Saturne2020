@@ -55,7 +55,44 @@
         </header>
         <div class="body">
             <div id="haut">
-                <h1>Prochaines évaluations</h1>
+                <h1>Évaluations terminées</h1>
+                <p>Pour rendre les résultats visibles cliquez sur la flèche verte.</p>
+                <table class="liste">
+                    <tr>
+                        <th style="width: 100px">Nom</th>
+                        <th style="width: 150px">Date de début</th>
+                        <th style="width: 150px">Date de fin</th>
+                        <th style="width: 80px">Durée</th>
+                        <th style="width: 40px"></th>
+                    </tr>
+                    <c:forEach var="test" items="${listTests}">
+                        <TR>
+                           <td>${test[1]}</td>
+                            <td>${test[2]}</td>
+                            <td>${test[3]}</td>
+                            <td>${test[4]}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${test[5]=='visible'}">
+                                        <form action="rendreInvisible.do" method="POST">
+                                            <input type="hidden" name="id" value="${test[0]}">
+                                            <input type="hidden" name="code" value="${code}">
+                                            <button><img src="img/non.png" height="20"></button>
+                                        </form>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <form action="rendreVisible.do" method="POST">
+                                            <input type="hidden" name="id" value="${test[0]}">
+                                            <input type="hidden" name="code" value="${code}">
+                                            <button><img src="img/oui.png" height="20"></button>
+                                        </form>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td> 
+                        </TR>
+                        
+                    </c:forEach>
+                </table>
             </div>    
             <div id="droite">
                 <h1>Liste des Groupes</h1>

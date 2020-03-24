@@ -28,6 +28,10 @@
                         <ul class="sous">
                             <li><a href="#">Historique des auto-évaluations</a></li>
                             <li><a href="#">Paramètres</a></li>
+                            <form action="affResultatEtudiant.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Voir ses résultats"></li>
+                            </form>
                             <form action="disconnect.do" method="GET">
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Déconnexion"></li>
@@ -39,7 +43,7 @@
             </br>
         </header>
         <div class="body">
-            <div id="haut">
+            <div id="gauche">
                 <h1>Évaluations à compléter</h1>
                 <table class="liste">
                     <tr>
