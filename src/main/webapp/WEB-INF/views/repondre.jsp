@@ -24,8 +24,8 @@
             </a>
             <form action="index.do" method="GET">
                 <input type="hidden" name="code" value="${code}">
-                <h2><img src="img/s2.jpg" style="height: 35px;"  alt="Saturne">  
-                    <input type="submit" class="titre" value="Saturne"></h2>
+                <h2><INPUT border=0 src="img/logo5.png" type=image Value=submit style="height: 100px;">
+                </h2>
             </form>
             <nav>
                 <ul>
@@ -33,6 +33,10 @@
                         <ul class="sous">
                             <li><a href="#">Historique des auto-évaluations</a></li>
                             <li><a href="#">Paramètres</a></li>
+                            <form action="affResultatEtudiant.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Voir ses résultats"></li>
+                            </form>
                             <form action="disconnect.do" method="GET">
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Déconnexion"></li>

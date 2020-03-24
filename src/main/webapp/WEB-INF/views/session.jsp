@@ -18,8 +18,8 @@
             </a>
             <form action="index.do" method="GET">
                 <input type="hidden" name="code" value="${code}">
-                <h2><img src="img/s2.jpg" style="height: 35px;"  alt="Saturne">  
-                    <input type="submit" class="titre" value="Saturne"></h2>
+                <h2><INPUT border=0 src="img/logo5.png" type=image Value=submit style="height: 100px;">
+                </h2>
             </form>
             <nav>
                 <ul>

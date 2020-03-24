@@ -18,7 +18,7 @@
 }
 
 .menu {
-  background-color: #102645;
+  background-color: #596673;
   border: none;
   color: white;
   text-decoration: none;
@@ -51,7 +51,7 @@ h1 {
 }
 
 h2 {
-    margin: 0 0 0;
+    margin: 0 0 10%;
     text-align: center;
     position: relative;
     font-weight: bold;
@@ -76,7 +76,7 @@ header {
     color: white;
     position: relative;
     height: 120px;
-    background-color: #102645;
+    background-color: #708090;
 }
 
 .body {
@@ -219,7 +219,7 @@ nav input:hover {
 
 .sous {
     display: none;
-    background-color: #102645;
+    background-color: #596673;
     position: absolute;
     width: 85%;
     z-index: 1000;
