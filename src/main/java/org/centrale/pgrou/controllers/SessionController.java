@@ -38,6 +38,8 @@ public class SessionController {
     private TestRepository testRepository;
     @Autowired
     private ContenuquizRepository contenuquizRepository;
+    @Autowired
+    private ConnexionRepository connexionRepository;
     
     
     /**
@@ -136,23 +138,23 @@ public class SessionController {
     }
 
         
-    @RequestMapping(value="valider.do",method=RequestMethod.POST)
-    public ModelAndView handlePost2(HttpServletRequest request) {
-        String idStr = request.getParameter("id");
-        int id = Integer.parseInt(idStr);
-        ModelAndView returned = new ModelAndView();
-        List<Notation> listNotation = notationRepository.findAll();
-        List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Quiz> listQuiz = quizRepository.findWithPersonne(id);
-        List<Test> listTest = testRepository.findWithPersonne(id);
-        returned = new ModelAndView("session");
-        returned.addObject("listNotations", listNotation);
-        returned.addObject("listGroupes", listGroupe);
-        returned.addObject("listQuizs",listQuiz);
-        returned.addObject("listTests",listTest);
-        returned.addObject("personneId",id);
-        return returned;
-    }
+//    @RequestMapping(value="valider.do",method=RequestMethod.POST)
+//    public ModelAndView handlePost2(HttpServletRequest request) {
+//        String idStr = request.getParameter("id");
+//        int id = Integer.parseInt(idStr);
+//        ModelAndView returned = new ModelAndView();
+//        List<Notation> listNotation = notationRepository.findAll();
+//        List<Groupe> listGroupe = groupeRepository.findAll();
+//        List<Quiz> listQuiz = quizRepository.findWithPersonne(id);
+//        List<Test> listTest = testRepository.findWithPersonne(id);
+//        returned = new ModelAndView("session");
+//        returned.addObject("listNotations", listNotation);
+//        returned.addObject("listGroupes", listGroupe);
+//        returned.addObject("listQuizs",listQuiz);
+//        returned.addObject("listTests",listTest);
+//        returned.addObject("personneId",id);
+//        return returned;
+//    }
     
     @RequestMapping(value="delete.do",method=RequestMethod.POST)
     public ModelAndView handleDelete(HttpServletRequest request) {
@@ -165,18 +167,22 @@ public class SessionController {
                 testRepository.delete(test.get());
             }
         }
-        String persIdStr = request.getParameter("personneId");
-        int persId = Integer.parseInt(persIdStr);
-        List<Notation> listNotation = notationRepository.findAll();
-        List<Groupe> listGroupe = groupeRepository.findAll();
-        List<Quiz> listQuiz = quizRepository.findWithPersonne(persId);
-        List<Test> listTest = testRepository.findWithPersonne(persId);
-        returned = new ModelAndView("session");
-        returned.addObject("listNotations", listNotation);
-        returned.addObject("listGroupes", listGroupe);
-        returned.addObject("listQuizs",listQuiz);
-        returned.addObject("listTests",listTest);
-        returned.addObject("personneId",persId);
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if (coResult.isPresent()) {
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer persId = connexion.getPersonneid().getPersonneid();
+            List<Notation> listNotation = notationRepository.findAll();
+            List<Groupe> listGroupe = groupeRepository.findAll();
+            List<Quiz> listQuiz = quizRepository.findWithPersonne(persId);
+            List<Test> listTest = testRepository.findWithPersonne(persId);
+            returned.addObject("listNotations", listNotation);
+            returned.addObject("listGroupes", listGroupe);
+            returned.addObject("listQuizs",listQuiz);
+            returned.addObject("listTests",listTest);
+            returned.addObject("personneId",persId);
+        }
         return returned;
     }
 
