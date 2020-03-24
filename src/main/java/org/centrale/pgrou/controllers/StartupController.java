@@ -59,6 +59,8 @@ public class StartupController {
                 Role teacher = roleRepository.findOneById(2);
                 if(pers.getRoleCollection().contains(admin)||pers.getRoleCollection().contains(teacher)){
                     returned = new ModelAndView("AccueilProfesseur");
+                    int persId = pers.getPersonneid();
+                    returned.addObject("listTests",testRepository.affichagePrecedentsTests(persId));
                 } else {
                     returned = new ModelAndView("AccueilEtudiant");
                     String login = pers.getLogin();
@@ -131,6 +133,8 @@ public class StartupController {
                 if (person != null && person.getRoleCollection() != null){
                     if(person.getRoleCollection().contains(admin) || person.getRoleCollection().contains(teacher)){
                         returned = new ModelAndView("AccueilProfesseur");
+                        int persId = person.getPersonneid();
+                        returned.addObject("listTests",testRepository.affichagePrecedentsTests(persId));
                     } else {
                         returned = new ModelAndView("AccueilEtudiant");
                         returned.addObject("listTests",testRepository.affichageProchainsTests(login));

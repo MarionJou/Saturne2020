@@ -4,11 +4,16 @@
 package org.centrale.pgrou.controllers;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.centrale.pgrou.items.Connexion;
 import org.centrale.pgrou.items.Evaluation;
 import org.centrale.pgrou.items.Personne;
+import org.centrale.pgrou.items.Question;
 import org.centrale.pgrou.items.Test;
+import org.centrale.pgrou.repositories.ConnexionRepository;
 import org.centrale.pgrou.repositories.EvaluationRepository;
 import org.centrale.pgrou.repositories.PersonneRepository;
 import org.centrale.pgrou.repositories.TestRepository;
@@ -35,6 +40,8 @@ public class ResultatController {
     @Autowired
     private PersonneRepository personneRepository;
     
+    @Autowired 
+    private ConnexionRepository connexionRepository;
     /**
      * Fonction pour récupérer la liste des tests auquels un groupe à accès
      * @param request l'id du groupe
@@ -184,5 +191,61 @@ public class ResultatController {
         
         object.put("listEval", listObject);
         return returned.addObject("theResponse",object.toString());
+    }
+    
+    @RequestMapping(value="rendreVisible.do",method=RequestMethod.POST)
+    public ModelAndView rendreVisible(HttpServletRequest request) throws ParseException {
+        ModelAndView returned = new ModelAndView("AccueilProfesseur");
+        String idStr = request.getParameter("id");
+        int id = Integer.parseInt(idStr);
+        String code = request.getParameter("code");
+        Optional <Test> testOpt = testRepository.findById(id);
+        Test test = testOpt.get();
+        test.setResultatvisible(true);
+        testRepository.save(test);
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if(coResult.isPresent()){
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer persId = connexion.getPersonneid().getPersonneid();
+            returned.addObject("listTests",testRepository.affichagePrecedentsTests(persId));
+        }
+        return returned;
+    }
+    
+    @RequestMapping(value="rendreInvisible.do",method=RequestMethod.POST)
+    public ModelAndView rendreInvisible(HttpServletRequest request) throws ParseException {
+        ModelAndView returned = new ModelAndView("AccueilProfesseur");
+        String idStr = request.getParameter("id");
+        int id = Integer.parseInt(idStr);
+        String code = request.getParameter("code");
+        Optional <Test> testOpt = testRepository.findById(id);
+        Test test = testOpt.get();
+        test.setResultatvisible(false);
+        testRepository.save(test);
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if(coResult.isPresent()){
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer persId = connexion.getPersonneid().getPersonneid();
+            returned.addObject("listTests",testRepository.affichagePrecedentsTests(persId));
+        }
+        return returned;
+    }
+    
+    
+    @RequestMapping(value="affResultatEtudiant.do",method=RequestMethod.POST)
+    public ModelAndView affResultatEtudiant(HttpServletRequest request) throws ParseException {
+        ModelAndView returned = new ModelAndView("resultatEtudiant");
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if (coResult.isPresent()) {
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer personneId = connexion.getPersonneid().getPersonneid();
+            List<Evaluation> listEvaluation = evaluationRepository.findEvalTermineeWithPers(personneId);
+            returned.addObject("evaluations",listEvaluation);
+        }
+        return returned;
     }
 }
