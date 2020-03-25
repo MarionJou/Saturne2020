@@ -42,6 +42,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Test.findByDureemaxtest", query = "SELECT t FROM Test t WHERE t.dureemaxtest = :dureemaxtest")})
 public class Test implements Serializable {
 
+    @Column(name = "resultatvisible")
+    private Boolean resultatvisible;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -177,6 +180,14 @@ public class Test implements Serializable {
     @Override
     public String toString() {
         return "org.centrale.pgrou.items.Test[ testid=" + testid + " ]";
+    }
+
+    public Boolean getResultatvisible() {
+        return resultatvisible;
+    }
+
+    public void setResultatvisible(Boolean resultatvisible) {
+        this.resultatvisible = resultatvisible;
     }
     
 }
