@@ -323,6 +323,101 @@ public class AutoEvalController {
         }        
         return returned;
     }      
+
+    @RequestMapping(value="affListeAutoEval.do",method=RequestMethod.POST)
+    public ModelAndView affListeAutoEval (HttpServletRequest request){
+        ModelAndView returned = new ModelAndView("listeAutoEval");
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        if (coResult.isPresent()) {
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer persId = connexion.getPersonneid().getPersonneid();
+            List<Quiz> quizs = quizRepository.findWithPersonne(persId);
+            returned.addObject("listQuizs", quizs);
+        }
+        return returned;
+    }
+    
+    @RequestMapping(value="repondreAutoEval.do",method=RequestMethod.POST)
+    public ModelAndView repondreAutoEval(HttpServletRequest request) {
+        ModelAndView returned;
+        List<QuesRepQCM> listQuesRep = new ArrayList();
+        
+        returned = new ModelAndView("repAutoEval");
+        String idStr = request.getParameter("id"); 
+        int id = Integer.parseInt(idStr);
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        Quiz unQuiz = quizRepository.findById(id).get();
+        if (coResult.isPresent()) {
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+        } 
+               
+        TestAff unTestAff = new TestAff(unQuiz.getQuizid(),unQuiz.getNomquiz());
+        returned.addObject("test",unTestAff);
+        List<Contenuquiz> quizCont = contenuquizRepository.findWithParameter(unQuiz);
+        Integer i = 1;
+        for (Contenuquiz c: quizCont){
+            Question question = c.getQuestionid();
+            List<Reponse> reponses = reponseRepository.findWithParameter(question);
+            List<ReponseQCM> listRepQCM = new ArrayList();
+            for (Reponse rep: reponses){
+                Qcmrep qr = qcmrepRepository.findWithParameter(rep);
+                ReponseQCM repQCM = new ReponseQCM(qr.getEnonce(),qr.getQcmrepid(),rep.getCorrecte());
+                listRepQCM.add(repQCM);                    
+            }
+            List<ReponseQCM> listRepQCMRand = new ArrayList();
+            int size = listRepQCM.size();
+            Random randRep = new Random();
+            for(int k=0; k<size;k++){
+                int index =randRep.nextInt(size-k);
+                listRepQCMRand.add(listRepQCM.get(index));
+                listRepQCM.remove(index);
+            }
+            Qcm qcm = qcmRepository.findWithParameters(question.getQuestionid());
+            Boolean repUni= qcm.getRepunique();
+            QuesRepQCM ques = new QuesRepQCM(question.getEnonce(),c.getContenuquizid(),listRepQCMRand, repUni, i);
+            listQuesRep.add(ques);
+            i=i+1;
+        }
+        List<QuesRepQCM> listQuesRepRand= new ArrayList();
+        int size = i-1;
+        Random rand = new Random();
+        for(int k=0; k<(i-1);k++){
+            int index =rand.nextInt(size-k);
+            QuesRepQCM ques = listQuesRep.get(index);
+            ques.setOrdre(k+1);
+            listQuesRepRand.add(ques);
+            listQuesRep.remove(index);
+        }
+        returned.addObject("nombre",i-1);
+        returned.addObject("quesRep", listQuesRepRand);
+        return returned;
+    }
+    
+    
+    @RequestMapping(value="supprimerAutoEval.do",method=RequestMethod.POST)
+    public ModelAndView supprimerAutoEval(HttpServletRequest request) {
+        ModelAndView returned;
+        
+        returned = new ModelAndView("listeAutoEval");
+        String idStr = request.getParameter("id"); 
+        int id = Integer.parseInt(idStr);
+        String code = request.getParameter("code");
+        Optional<Connexion> coResult = connexionRepository.findById(code);
+        Quiz unQuiz = quizRepository.findById(id).get();
+        quizRepository.delete(unQuiz);
+        if (coResult.isPresent()) {
+            Connexion connexion = coResult.get();
+            Security.setDefaultData(returned, connexion);
+            Integer persId = connexion.getPersonneid().getPersonneid();
+            List<Quiz> quizs = quizRepository.findWithPersonne(persId);
+            returned.addObject("listQuizs", quizs);
+        } 
+        return returned;
+    }
 }
         
         
