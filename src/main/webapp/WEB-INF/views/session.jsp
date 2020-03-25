@@ -29,13 +29,17 @@
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Créer une question"></li>
                             </form>
-                            <form action="#" method="GET">
+                            <form action="versCreerQuiz.do" method="GET">
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Créer un quiz"></li>
                             </form>
                             <form action="versCreerTest.do" method="GET">
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Créer une session d'évaluation"></li>
+                            </form>
+                            <form action="versAffRes.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Afficher les résultats"></li>
                             </form>
                             <form action="#" method="GET">
                                 <input type="hidden" name="code" value="${code}">

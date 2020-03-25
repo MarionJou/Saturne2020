@@ -24,7 +24,7 @@
                 <h2><INPUT border=0 src="img/logo5.png" type=image Value=submit style="height: 100px;">
                 </h2>
             </form>
-            <nav>
+           <nav>
                 <ul>
                     <li class="deroulant"><a href="#" class="nom">${nom} ${prenom} &ensp;</a>
                         <ul class="sous">
@@ -39,6 +39,10 @@
                             <form action="versCreerTest.do" method="GET">
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Créer une session d'évaluation"></li>
+                            </form>
+                            <form action="versAffRes.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Afficher les résultats"></li>
                             </form>
                             <form action="#" method="GET">
                                 <input type="hidden" name="code" value="${code}">

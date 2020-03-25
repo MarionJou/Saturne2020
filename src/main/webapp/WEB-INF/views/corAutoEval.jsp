@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link href="css/repondre.css" rel="stylesheet" type="text/css" />
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="js/jquery-3.4.1.js"></script>
         <title>JSP Page</title>
     </head>
@@ -30,7 +30,10 @@
                 <ul>
                     <li class="deroulant"><a href="#">${nom} ${prenom} &ensp;</a>
                         <ul class="sous">
-                            <li><a href="#">Historique des auto-évaluations</a></li>
+                            <li><form action="affListeAutoEval.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Historique des auto-évaluations"></li>
+                            </form></li>
                             <li><a href="#">Paramètres</a></li>
                             <form action="affResultatEtudiant.do" method="POST">
                                 <input type="hidden" name="code" value="${code}">

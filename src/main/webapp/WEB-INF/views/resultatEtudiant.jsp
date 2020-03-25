@@ -23,7 +23,10 @@
                 <ul>
                     <li class="deroulant"><a href="#">${nom} ${prenom} &ensp;</a>
                         <ul class="sous">
-                            <li><a href="#">Historique des auto-évaluations</a></li>
+                            <li><form action="affListeAutoEval.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Historique des auto-évaluations"></li>
+                            </form></li>
                             <li><a href="#">Paramètres</a></li>
                             <form action="affResultatEtudiant.do" method="POST">
                                 <input type="hidden" name="code" value="${code}">

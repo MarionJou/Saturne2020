@@ -40,6 +40,10 @@
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Créer une session d'évaluation"></li>
                             </form>
+                            <form action="versAffRes.do" method="POST">
+                                <input type="hidden" name="code" value="${code}">
+                                <li><input type="submit" class="menu" value="Afficher les résultats"></li>
+                            </form>
                             <form action="#" method="GET">
                                 <input type="hidden" name="code" value="${code}">
                                 <li><input type="submit" class="menu" value="Paramètres"></li>
